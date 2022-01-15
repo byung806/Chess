@@ -63,8 +63,8 @@ public class Board {
     }
 
     public int getPieceFromScreenCoords(int x, int y) {
-        int xCol = (x - (screenX - screenLength / 2)) / (screenLength / size);
-        int yCol = (y - (screenY - screenLength / 2)) / (screenLength / size);
+        int xCol = (int) Math.floor((float)(x - (screenX - screenLength / 2)) / ((float) screenLength / size));
+        int yCol = (int) Math.floor((float)(y - (screenY - screenLength / 2)) / ((float) screenLength / size));
         if (xCol < 0 || xCol >= size || yCol < 0 || yCol >= size) {
             return -1;
         }
@@ -127,11 +127,7 @@ public class Board {
     }
 
     public Piece[] getArrangement() {
-        Piece[] arrangementCopy = arrangement.clone();
-        if (this.draggedPiece != null) {
-            arrangementCopy[draggedPiece.getSquareId()] = null;
-        }
-        return arrangementCopy;
+        return arrangement;
     }
 
     public int getColorToMove() {
@@ -196,5 +192,21 @@ public class Board {
     public void setSelectedPiece(Piece piece) {
         this.selectedPiece = piece;
         dirty = true;
+    }
+
+    public String toString() {
+        StringBuilder printOut = new StringBuilder();
+        for (int y = 0; y < size; y++) {
+            printOut.append("| ");
+            for (int x = 0; x < size; x++) {
+                Piece piece = arrangement[y * size + x];
+                printOut.append(piece != null ? piece : " ");
+                if (x != size-1) {
+                    printOut.append(" ");
+                }
+            }
+            printOut.append(y != size-1 ? " |\n" : " |");
+        }
+        return printOut.toString();
     }
 }
