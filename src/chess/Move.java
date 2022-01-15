@@ -24,4 +24,19 @@ public class Move {
     public int getTargetSquare() {
         return targetSquare;
     }
+
+    public Board getBoard() {
+        return board;
+    }
+
+    public boolean equals(Move m) {
+        if (m == null) {
+            return false;
+        }
+        return this.board.equals(m.board) && this.startSquare == m.startSquare && this.targetSquare == m.targetSquare;
+    }
+
+    public String toString() {
+        return "[" + startSquare + " -> " + targetSquare + "]";
+    }
 }

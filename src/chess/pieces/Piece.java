@@ -4,6 +4,7 @@ import chess.Board;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Hashtable;
 
 public abstract class Piece {
     public static final int King = 1;   // 001
@@ -93,7 +94,36 @@ public abstract class Piece {
         return (this.pieceType & 0b101) == 0b101;
     }
 
+    public boolean isKing() {
+        return this.pieceType % 8 == Piece.King;
+    }
+
+    public boolean isKnight() {
+        return this.pieceType % 8 == Piece.Knight;
+    }
+
+    public boolean isPawn() {
+        return this.pieceType % 8 == Piece.Pawn;
+    }
+
     public boolean isSlidingPiece() {
         return (this.pieceType & 0b100) != 0;
+    }
+
+    public String toString() {
+        Hashtable<Integer, String> asciiChess = new Hashtable<>();
+        asciiChess.put(White + King, "K");
+        asciiChess.put(White + Queen, "Q");
+        asciiChess.put(White + Rook, "R");
+        asciiChess.put(White + Bishop, "B");
+        asciiChess.put(White + Knight, "N");
+        asciiChess.put(White + Pawn, "p");
+        asciiChess.put(Black + King, "k");
+        asciiChess.put(Black + Queen, "q");
+        asciiChess.put(Black + Rook, "r");
+        asciiChess.put(Black + Bishop, "b");
+        asciiChess.put(Black + Knight, "n");
+        asciiChess.put(Black + Pawn, "p");
+        return asciiChess.get(pieceType);
     }
 }

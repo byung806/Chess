@@ -93,8 +93,9 @@ public class BoardPanel extends JPanel {
         int boardSideLength = board.getScreenLength();
         int size = board.getSize();
         int imageLength = boardSideLength / size;
+        Piece draggedPiece = board.getDraggedPiece();
         for (Piece piece : board.getArrangement()) {
-            if (piece != null) {
+            if (piece != null && piece != draggedPiece) {
                 int x = getWidth() / 2 - boardSideLength / 2 + piece.getCol() * boardSideLength / size;
                 int y = getHeight() / 2 - boardSideLength / 2 + piece.getRow() * boardSideLength / size;
                 g.drawImage(piece.getImage(), x, y, imageLength, imageLength, null);
