@@ -7,6 +7,53 @@ import java.util.Arrays;
 import java.util.List;
 
 public abstract class Chess {
+    private static final ArrayList<ArrayList<Integer>> ROOK_QUEEN_MOVES = new ArrayList<>();
+    private static final ArrayList<ArrayList<Integer>> BISHOP_QUEEN_MOVES = new ArrayList<>();
+    private static final ArrayList<ArrayList<Integer>> KING_MOVES = new ArrayList<>();
+    private static final ArrayList<ArrayList<Integer>> KNIGHT_MOVES = new ArrayList<>();
+    private static final ArrayList<ArrayList<Integer>> WHITE_PAWN_MOVES = new ArrayList<>();
+    private static final ArrayList<ArrayList<Integer>> BLACK_PAWN_MOVES = new ArrayList<>();
+
+    public Chess() {
+        ROOK_QUEEN_MOVES.add(new ArrayList<>(Arrays.asList(1, 0)));
+        ROOK_QUEEN_MOVES.add(new ArrayList<>(Arrays.asList(-1, 0)));
+        ROOK_QUEEN_MOVES.add(new ArrayList<>(Arrays.asList(0, 1)));
+        ROOK_QUEEN_MOVES.add(new ArrayList<>(Arrays.asList(0, -1)));
+
+        BISHOP_QUEEN_MOVES.add(new ArrayList<>(Arrays.asList(1, 1)));
+        BISHOP_QUEEN_MOVES.add(new ArrayList<>(Arrays.asList(1, -1)));
+        BISHOP_QUEEN_MOVES.add(new ArrayList<>(Arrays.asList(-1, 1)));
+        BISHOP_QUEEN_MOVES.add(new ArrayList<>(Arrays.asList(-1, -1)));
+
+        KING_MOVES.add(new ArrayList<>(Arrays.asList(1, 1)));
+        KING_MOVES.add(new ArrayList<>(Arrays.asList(1, 0)));
+        KING_MOVES.add(new ArrayList<>(Arrays.asList(1, -1)));
+        KING_MOVES.add(new ArrayList<>(Arrays.asList(0, -1)));
+        KING_MOVES.add(new ArrayList<>(Arrays.asList(-1, -1)));
+        KING_MOVES.add(new ArrayList<>(Arrays.asList(-1, 0)));
+        KING_MOVES.add(new ArrayList<>(Arrays.asList(-1, 1)));
+        KING_MOVES.add(new ArrayList<>(Arrays.asList(0, 1)));
+
+        KNIGHT_MOVES.add(new ArrayList<>(Arrays.asList(1, 2)));
+        KNIGHT_MOVES.add(new ArrayList<>(Arrays.asList(2, 1)));
+        KNIGHT_MOVES.add(new ArrayList<>(Arrays.asList(2, -1)));
+        KNIGHT_MOVES.add(new ArrayList<>(Arrays.asList(1, -2)));
+        KNIGHT_MOVES.add(new ArrayList<>(Arrays.asList(-1, -2)));
+        KNIGHT_MOVES.add(new ArrayList<>(Arrays.asList(-2, -1)));
+        KNIGHT_MOVES.add(new ArrayList<>(Arrays.asList(-2, 1)));
+        KNIGHT_MOVES.add(new ArrayList<>(Arrays.asList(-1, 2)));
+
+        WHITE_PAWN_MOVES.add(new ArrayList<>(Arrays.asList(1, -1)));
+        WHITE_PAWN_MOVES.add(new ArrayList<>(Arrays.asList(-1, -1)));
+        WHITE_PAWN_MOVES.add(new ArrayList<>(Arrays.asList(0, -1)));
+        WHITE_PAWN_MOVES.add(new ArrayList<>(Arrays.asList(0, -2)));
+
+        BLACK_PAWN_MOVES.add(new ArrayList<>(Arrays.asList(1, 1)));
+        BLACK_PAWN_MOVES.add(new ArrayList<>(Arrays.asList(-1, 1)));
+        BLACK_PAWN_MOVES.add(new ArrayList<>(Arrays.asList(0, 1)));
+        BLACK_PAWN_MOVES.add(new ArrayList<>(Arrays.asList(0, 2)));
+    }
+
     public static Piece[] loadFenPosition(String fen, Board cboard) {
         int size = cboard.getSize();
         Piece[] board = new Piece[size * size];
@@ -54,18 +101,12 @@ public abstract class Chess {
         int start = piece.getSquareId();
 
         if (piece.isSlidingPiece()) {
-            List<List<Integer>> directions = new ArrayList<>();
+            ArrayList<ArrayList<Integer>> directions = new ArrayList<>();
             if (piece.isRookOrQueen()) {
-                directions.add(new ArrayList<>(Arrays.asList(1, 0)));
-                directions.add(new ArrayList<>(Arrays.asList(-1, 0)));
-                directions.add(new ArrayList<>(Arrays.asList(0, 1)));
-                directions.add(new ArrayList<>(Arrays.asList(0, -1)));
+                directions.addAll(ROOK_QUEEN_MOVES);
             }
             if (piece.isBishopOrQueen()) {
-                directions.add(new ArrayList<>(Arrays.asList(1, 1)));
-                directions.add(new ArrayList<>(Arrays.asList(1, -1)));
-                directions.add(new ArrayList<>(Arrays.asList(-1, 1)));
-                directions.add(new ArrayList<>(Arrays.asList(-1, -1)));
+                directions.addAll(BISHOP_QUEEN_MOVES);
             }
             for (List<Integer> direction : directions) {
                 int x = posX;
@@ -78,38 +119,24 @@ public abstract class Chess {
                         }
                         break;
                     }
-                    moves.add(new Move(board, start, y * size + x));
+                    if (start != y * size + x) {
+                        moves.add(new Move(board, start, y * size + x));
+                    }
                     x += direction.get(0);
                     y += direction.get(1);
                 }
             }
         } else {
-            List<List<Integer>> directions = new ArrayList<>();
+            ArrayList<ArrayList<Integer>> directions = new ArrayList<>();
             if (piece.isKing()) {
-                directions.add(new ArrayList<>(Arrays.asList(1, 1)));
-                directions.add(new ArrayList<>(Arrays.asList(1, 0)));
-                directions.add(new ArrayList<>(Arrays.asList(1, -1)));
-                directions.add(new ArrayList<>(Arrays.asList(0, -1)));
-                directions.add(new ArrayList<>(Arrays.asList(-1, -1)));
-                directions.add(new ArrayList<>(Arrays.asList(-1, 0)));
-                directions.add(new ArrayList<>(Arrays.asList(-1, 1)));
-                directions.add(new ArrayList<>(Arrays.asList(0, 1)));
+                directions = KING_MOVES;
             } else if (piece.isKnight()) {
-                directions.add(new ArrayList<>(Arrays.asList(1, 2)));
-                directions.add(new ArrayList<>(Arrays.asList(2, 1)));
-                directions.add(new ArrayList<>(Arrays.asList(2, -1)));
-                directions.add(new ArrayList<>(Arrays.asList(1, -2)));
-                directions.add(new ArrayList<>(Arrays.asList(-1, -2)));
-                directions.add(new ArrayList<>(Arrays.asList(-2, -1)));
-                directions.add(new ArrayList<>(Arrays.asList(-2, 1)));
-                directions.add(new ArrayList<>(Arrays.asList(-1, 2)));
+                directions = KNIGHT_MOVES;
             } else if (piece.isPawn()) {
                 if (pieceColor == Piece.White) {
-                    directions.add(new ArrayList<>(Arrays.asList(0, -1)));
-                    directions.add(new ArrayList<>(Arrays.asList(0, -2)));
+                    directions = WHITE_PAWN_MOVES;
                 } else {
-                    directions.add(new ArrayList<>(Arrays.asList(0, 1)));
-                    directions.add(new ArrayList<>(Arrays.asList(0, 2)));
+                    directions = BLACK_PAWN_MOVES;
                 }
             }
             for (List<Integer> direction : directions) {
@@ -118,7 +145,11 @@ public abstract class Chess {
                 if (x >= 0 && x < size && y >= 0 && y < size) {
                     Piece pieceInWay = arrangement[y * size + x];
                     if (piece.isPawn()) {
-                        if ((pieceInWay != null || (direction.get(1) == -2 && posY != 6) || (direction.get(1) == 2 && posY != 1))) {
+                        if (direction.get(0) == 1 || direction.get(0) == -1) {
+                            if (pieceInWay == null) {
+                                continue;
+                            }
+                        } else if ((pieceInWay != null || (direction.get(1) == -2 && posY != 6) || (direction.get(1) == 2 && posY != 1))) {
                             break;
                         }
                     } else {
@@ -148,7 +179,8 @@ public abstract class Chess {
     }
 
     public static boolean isValidMove(Move move) {
-        List<Move> moves = generateAllMoves(move.getBoard());
+        Piece piece = move.getBoard().getArrangement()[move.getStartSquare()];
+        List<Move> moves = piece.isColor(move.getBoard().getColorToMove()) ? generateMoves(piece) : new ArrayList<>();
         return moves.stream().filter(m -> m.equals(move)).toList().size() != 0;
     }
 }

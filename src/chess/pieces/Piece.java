@@ -70,10 +70,6 @@ public abstract class Piece {
         return this.pieceType;
     }
 
-    public void setPiece(int pieceType, int color) {
-        this.pieceType = pieceType + color;
-    }
-
     public boolean isColor(int color) {
         return (this.pieceType & colorMask) == color;
     }

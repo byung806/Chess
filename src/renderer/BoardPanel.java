@@ -6,6 +6,7 @@ import listener.ClickListener;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 public class BoardPanel extends JPanel {
@@ -76,7 +77,7 @@ public class BoardPanel extends JPanel {
     }
 
     public void drawHighlightedSquares(Board board) {
-        Hashtable<Integer, Color> highlighted = board.getHighlightedSquares();
+        Hashtable<Integer, ArrayList<Color>> highlighted = board.getHighlightedSquares();
         for (int squareId : highlighted.keySet()) {
             int size = board.getSize();
             int boardSideLength = board.getScreenLength();
@@ -84,8 +85,10 @@ public class BoardPanel extends JPanel {
             int row = squareId / size;
             int x = board.getScreenX() - boardSideLength / 2 + col * boardSideLength / size;
             int y = board.getScreenY() - boardSideLength / 2 + row * boardSideLength / size;
-            g.setPaint(highlighted.get(squareId));
-            g.fillRect(x, y, boardSideLength / size, boardSideLength / size);
+            for (Color c : highlighted.get(squareId)) {
+                g.setPaint(c);
+                g.fillRect(x - 1, y - 1, boardSideLength / size + 2, boardSideLength / size + 2);
+            }
         }
     }
 

@@ -3,11 +3,16 @@ package chess;
 import chess.pieces.Piece;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Hashtable;
 
-public class Board {
-    public static Color YELLOW = new Color(0.882f, 0.882f, 0.298f, 0.8f);
+public class Board extends Chess {
+    public static Color MOVED_COLOR = new Color(0.188f, 0.670f, 0.556f, 0.8f);
+    public static Color SELECTED_COLOR = new Color(0.396f, 0.886f, 0.772f, 0.8f);
     public static Color RED = new Color(0.982f, 0.102f, 0.105f, 0.8f);
+
+    public static int KING_SIDE_CASTLE = 0;
+    public static int QUEEN_SIDE_CASTLE = 1;
 
     private final String fen;
     private final Piece[] arrangement;
@@ -23,7 +28,7 @@ public class Board {
     private int halfMoveClock;
     private int numMoves;
 
-    private Hashtable<Integer, Color> highlightedSquares;
+    private Hashtable<Integer, ArrayList<Color>> highlightedSquares;
     private boolean dirty;
 
     private Piece draggedPiece;
@@ -72,12 +77,18 @@ public class Board {
     }
 
     public void addHighlightedSquare(int squareId, Color color) {
-        highlightedSquares.put(squareId, color);
+        ArrayList<Color> colors = highlightedSquares.get(squareId);
+        if (colors == null) {
+            colors = new ArrayList<>();
+        }
+        colors.add(color);
+        highlightedSquares.put(squareId, colors);
         dirty = true;
     }
 
     public void removeHighlightedSquare(int squareId) {
-        highlightedSquares.remove(squareId);
+        ArrayList<Color> hlSquares = highlightedSquares.get(squareId);
+        hlSquares.remove(hlSquares.size() - 1);
         dirty = true;
     }
 
@@ -89,9 +100,24 @@ public class Board {
         // doesn't check for valid moves so a valid move should be passed in
         int start = move.getStartSquare();
         Piece toMove = arrangement[start];
+        if (toMove.isColor(Piece.Black)) {
+            incrementNumMoves();
+        }
+        if (move.isCastle()) {
+            if (move.getCastleType() == KING_SIDE_CASTLE && move.getColor() == Piece.White) {
+                whiteKingSideCastle = false;
+            } else if (move.getCastleType() == KING_SIDE_CASTLE && move.getColor() == Piece.Black) {
+                blackKingSideCastle = false;
+            } else if (move.getCastleType() == QUEEN_SIDE_CASTLE && move.getColor() == Piece.White) {
+                whiteQueenSideCastle = false;
+            } else if (move.getCastleType() == QUEEN_SIDE_CASTLE && move.getColor() == Piece.Black) {
+                blackQueenSideCastle = false;
+            }
+        }
         toMove.setSquareId(move.getTargetSquare());
         arrangement[start] = null;
         arrangement[move.getTargetSquare()] = toMove;
+        this.colorToMove = this.colorToMove == Piece.White ? Piece.Black : Piece.White;
         this.dirty = true;
     }
 
@@ -118,7 +144,7 @@ public class Board {
         }
     }
 
-    public Hashtable<Integer, Color> getHighlightedSquares() {
+    public Hashtable<Integer, ArrayList<Color>> getHighlightedSquares() {
         return this.highlightedSquares;
     }
 

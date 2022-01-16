@@ -33,18 +33,19 @@ public class ClickListener extends MouseAdapter {
     @Override
     public void mousePressed(MouseEvent e) {
         this.dragging = true;
-        if (board.getSelectedPiece() != null) {
-            board.removeHighlightedSquare(board.getSelectedPiece().getSquareId());
-        }
         int squareId = board.getPieceFromScreenCoords(e.getX(), e.getY());
         Piece piece = squareId != -1 ? board.getArrangement()[squareId] : null;
         if (e.getButton() == 3) {
             // todo: add arrows and square highlighting
         } else if (e.getButton() == 1) {
+            if (board.getSelectedPiece() != null) {
+                int selectedPieceSq = board.getSelectedPiece().getSquareId();
+                board.removeHighlightedSquare(selectedPieceSq);
+            }
             board.setSelectedPiece(piece);
             board.setDraggedPiece(piece);
             if (piece != null) {
-                board.addHighlightedSquare(squareId, Board.YELLOW);
+                board.addHighlightedSquare(squareId, Board.SELECTED_COLOR);
             }
         }
         panel.repaint();
@@ -60,8 +61,8 @@ public class ClickListener extends MouseAdapter {
             Move move = squareId != -1 && squareId != start ? new Move(board, start, squareId) : null;
             if (move != null && Chess.isValidMove(move)) {
                 board.clearHighlightedSquares();
-                board.addHighlightedSquare(start, Board.YELLOW);
-                board.addHighlightedSquare(squareId, Board.YELLOW);
+                board.addHighlightedSquare(start, Board.MOVED_COLOR);
+                board.addHighlightedSquare(squareId, Board.MOVED_COLOR);
                 board.executeMove(move);
                 board.setSelectedPiece(null);
             }
