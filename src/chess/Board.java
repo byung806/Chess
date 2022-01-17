@@ -4,7 +4,7 @@ import chess.pieces.Piece;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
 
 public class Board extends Chess {
     public static Color MOVED_COLOR = new Color(0.188f, 0.670f, 0.556f, 0.8f);
@@ -28,7 +28,7 @@ public class Board extends Chess {
     private int halfMoveClock;
     private int numMoves;
 
-    private Hashtable<Integer, ArrayList<Color>> highlightedSquares;
+    private HashMap<Integer, ArrayList<Color>> highlightedSquares;
     private boolean dirty;
 
     private Piece draggedPiece;
@@ -63,7 +63,7 @@ public class Board extends Chess {
         this.numMoves = Integer.parseInt(fen.split(" ")[5]);
         this.arrangement = Chess.loadFenPosition(fen, this);
         this.fen = fen;
-        this.highlightedSquares = new Hashtable<>();
+        this.highlightedSquares = new HashMap<>();
         this.dirty = true;
     }
 
@@ -93,7 +93,7 @@ public class Board extends Chess {
     }
 
     public void clearHighlightedSquares() {
-        highlightedSquares = new Hashtable<>();
+        highlightedSquares = new HashMap<>();
     }
 
     public void executeMove(Move move) {
@@ -144,7 +144,7 @@ public class Board extends Chess {
         }
     }
 
-    public Hashtable<Integer, ArrayList<Color>> getHighlightedSquares() {
+    public HashMap<Integer, ArrayList<Color>> getHighlightedSquares() {
         return this.highlightedSquares;
     }
 

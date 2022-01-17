@@ -4,7 +4,7 @@ import chess.Board;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Hashtable;
+import java.util.HashMap;
 
 public abstract class Piece {
     public static final int King = 1;   // 001
@@ -107,7 +107,7 @@ public abstract class Piece {
     }
 
     public String toString() {
-        Hashtable<Integer, String> asciiChess = new Hashtable<>();
+        HashMap<Integer, String> asciiChess = new HashMap<>();
         asciiChess.put(White + King, "K");
         asciiChess.put(White + Queen, "Q");
         asciiChess.put(White + Rook, "R");

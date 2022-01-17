@@ -129,6 +129,7 @@ public abstract class Chess {
         } else {
             ArrayList<ArrayList<Integer>> directions = new ArrayList<>();
             if (piece.isKing()) {
+                // todo: castling
                 directions = KING_MOVES;
             } else if (piece.isKnight()) {
                 directions = KNIGHT_MOVES;
@@ -145,6 +146,7 @@ public abstract class Chess {
                 if (x >= 0 && x < size && y >= 0 && y < size) {
                     Piece pieceInWay = arrangement[y * size + x];
                     if (piece.isPawn()) {
+                        // todo: add en passant
                         if (direction.get(0) == 1 || direction.get(0) == -1) {
                             if (pieceInWay == null) {
                                 continue;
@@ -179,6 +181,7 @@ public abstract class Chess {
     }
 
     public static boolean isValidMove(Move move) {
+        // todo: check and pins
         Piece piece = move.getBoard().getArrangement()[move.getStartSquare()];
         List<Move> moves = piece.isColor(move.getBoard().getColorToMove()) ? generateMoves(piece) : new ArrayList<>();
         return moves.stream().filter(m -> m.equals(move)).toList().size() != 0;

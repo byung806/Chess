@@ -7,7 +7,7 @@ import listener.ClickListener;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
 
 public class BoardPanel extends JPanel {
     Graphics2D g;
@@ -77,7 +77,7 @@ public class BoardPanel extends JPanel {
     }
 
     public void drawHighlightedSquares(Board board) {
-        Hashtable<Integer, ArrayList<Color>> highlighted = board.getHighlightedSquares();
+        HashMap<Integer, ArrayList<Color>> highlighted = board.getHighlightedSquares();
         for (int squareId : highlighted.keySet()) {
             int size = board.getSize();
             int boardSideLength = board.getScreenLength();
