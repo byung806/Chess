@@ -63,15 +63,20 @@ public class BoardPanel extends JPanel {
         for (int rank = 0; rank < size; rank++) {
             for (int file = 0; file < size; file++) {
                 boolean isLightSquare = (file + rank) % 2 != 0;
+                Color otherColor;
                 if (isLightSquare) {
                     g.setPaint(new Color(0.937f, 0.850f, 0.717f, 1.0f));
+                    otherColor = new Color(0.705f, 0.533f, 0.401f, 1.0f);
                 } else {
                     g.setPaint(new Color(0.705f, 0.533f, 0.401f, 1.0f));
+                    otherColor = new Color(0.937f, 0.850f, 0.717f, 1.0f);
                 }
-                g.fillRect(centerX - boardSideLength / 2 + rank * boardSideLength / board.getSize(),
-                        centerY - boardSideLength / 2 + file * boardSideLength / board.getSize(),
-                        boardSideLength / board.getSize(),
-                        boardSideLength / board.getSize());
+                int x = centerX - boardSideLength / 2 + rank * boardSideLength / board.getSize();
+                int y = centerY - boardSideLength / 2 + file * boardSideLength / board.getSize();
+                g.fillRect(x, y, boardSideLength / board.getSize(), boardSideLength / board.getSize());
+
+                g.setPaint(otherColor);
+                g.drawString("a", x, y);
             }
         }
     }

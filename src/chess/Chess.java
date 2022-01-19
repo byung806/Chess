@@ -151,7 +151,7 @@ public abstract class Chess {
                             if (pieceInWay == null) {
                                 continue;
                             }
-                        } else if ((pieceInWay != null || (direction.get(1) == -2 && posY != 6) || (direction.get(1) == 2 && posY != 1))) {
+                        } else if ((pieceInWay != null || (direction.get(1) == -2 && posY != size - 2) || (direction.get(1) == 2 && posY != 1))) {
                             break;
                         }
                     } else {

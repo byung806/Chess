@@ -17,20 +17,19 @@ public class Board extends Chess {
     private final String fen;
     private final Piece[] arrangement;
     private final int size;
-    private int screenLength;
-    private int screenX;
-    private int screenY;
-    private int colorToMove;
+    private final int enPassantSquare;
     public boolean whiteKingSideCastle;
     public boolean whiteQueenSideCastle;
     public boolean blackKingSideCastle;
     public boolean blackQueenSideCastle;
+    private int screenLength;
+    private int screenX;
+    private int screenY;
+    private int colorToMove;
     private int halfMoveClock;
     private int numMoves;
-
     private HashMap<Integer, ArrayList<Color>> highlightedSquares;
     private boolean dirty;
-
     private Piece draggedPiece;
     private Piece selectedPiece;
 
@@ -64,6 +63,7 @@ public class Board extends Chess {
         this.arrangement = Chess.loadFenPosition(fen, this);
         this.fen = fen;
         this.highlightedSquares = new HashMap<>();
+        this.enPassantSquare = -1;
         this.dirty = true;
     }
 

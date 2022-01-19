@@ -2,8 +2,11 @@ package chess.pieces;
 
 import chess.Board;
 
-import javax.swing.*;
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 
 public abstract class Piece {
@@ -19,18 +22,8 @@ public abstract class Piece {
     public static final int typeMask = 0b00111;
     public static final int colorMask = 0b11000;
 
-    protected static final Image WhitePawnImage = new ImageIcon("assets/textures/white_pawn.png").getImage();
-    protected static final Image WhiteKingImage = new ImageIcon("assets/textures/white_king.png").getImage();
-    protected static final Image WhiteKnightImage = new ImageIcon("assets/textures/white_knight.png").getImage();
-    protected static final Image WhiteBishopImage = new ImageIcon("assets/textures/white_bishop.png").getImage();
-    protected static final Image WhiteRookImage = new ImageIcon("assets/textures/white_rook.png").getImage();
-    protected static final Image WhiteQueenImage = new ImageIcon("assets/textures/white_queen.png").getImage();
-    protected static final Image BlackPawnImage = new ImageIcon("assets/textures/black_pawn.png").getImage();
-    protected static final Image BlackKingImage = new ImageIcon("assets/textures/black_king.png").getImage();
-    protected static final Image BlackKnightImage = new ImageIcon("assets/textures/black_knight.png").getImage();
-    protected static final Image BlackBishopImage = new ImageIcon("assets/textures/black_bishop.png").getImage();
-    protected static final Image BlackRookImage = new ImageIcon("assets/textures/black_rook.png").getImage();
-    protected static final Image BlackQueenImage = new ImageIcon("assets/textures/black_queen.png").getImage();
+    protected static Image WhitePawnImage, WhiteKnightImage, WhiteBishopImage, WhiteRookImage, WhiteQueenImage, WhiteKingImage;
+    protected static Image BlackPawnImage, BlackKnightImage, BlackBishopImage, BlackRookImage, BlackQueenImage, BlackKingImage;
 
     protected int pieceType;
     protected Image image;
@@ -39,6 +32,28 @@ public abstract class Piece {
     protected int squareId;
 
     // Each piece can be represented by CCTTT in binary where CC represents the color and TTT represents the piece type
+
+    protected Piece() {
+        try {
+            BufferedImage spriteSheet = ImageIO.read(new File("assets/textures/pieces.png"));
+            WhiteKingImage = spriteSheet.getSubimage(0, 0, 200, 200);
+            WhiteQueenImage = spriteSheet.getSubimage(200, 0, 200, 200);
+            WhiteBishopImage = spriteSheet.getSubimage(400, 0, 200, 200);
+            WhiteKnightImage = spriteSheet.getSubimage(600, 0, 200, 200);
+            WhiteRookImage = spriteSheet.getSubimage(800, 0, 200, 200);
+            WhitePawnImage = spriteSheet.getSubimage(1000, 0, 200, 200);
+
+            BlackKingImage = spriteSheet.getSubimage(0, 200, 200, 200);
+            BlackQueenImage = spriteSheet.getSubimage(200, 200, 200, 200);
+            BlackBishopImage = spriteSheet.getSubimage(400, 200, 200, 200);
+            BlackKnightImage = spriteSheet.getSubimage(600, 200, 200, 200);
+            BlackRookImage = spriteSheet.getSubimage(800, 200, 200, 200);
+            BlackPawnImage = spriteSheet.getSubimage(1000, 200, 200, 200);
+        } catch (IOException e) {
+            System.out.println("Pieces didn't load :(");
+            e.printStackTrace();
+        }
+    }
 
     public Image getImage() {
         return this.image;
@@ -91,15 +106,15 @@ public abstract class Piece {
     }
 
     public boolean isKing() {
-        return this.pieceType % 8 == Piece.King;
+        return this.pieceType % 0b1000 == Piece.King;
     }
 
     public boolean isKnight() {
-        return this.pieceType % 8 == Piece.Knight;
+        return this.pieceType % 0b1000 == Piece.Knight;
     }
 
     public boolean isPawn() {
-        return this.pieceType % 8 == Piece.Pawn;
+        return this.pieceType % 0b1000 == Piece.Pawn;
     }
 
     public boolean isSlidingPiece() {
