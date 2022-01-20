@@ -2,58 +2,43 @@ package chess.pieces;
 
 import chess.Board;
 
-import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 
 public abstract class Piece {
-    public static final int King = 1;   // 001
-    public static final int Pawn = 2;   // 010
-    public static final int Knight = 3; // 011
-    public static final int Bishop = 5; // 101
-    public static final int Rook = 6;   // 110
-    public static final int Queen = 7;  // 111
+    public static final int King = 0b001;   // 1
+    public static final int Pawn = 0b010;   // 2
+    public static final int Knight = 0b011; // 3
+    public static final int Bishop = 0b101; // 5
+    public static final int Rook = 0b110;   // 6
+    public static final int Queen = 0b111;  // 7
 
-    public static final int White = 8;  // 01000
-    public static final int Black = 16; // 10000
+    public static final int White = 0b01000; // 8
+    public static final int Black = 0b10000; // 16
     public static final int typeMask = 0b00111;
     public static final int colorMask = 0b11000;
 
-    protected static Image WhitePawnImage, WhiteKnightImage, WhiteBishopImage, WhiteRookImage, WhiteQueenImage, WhiteKingImage;
-    protected static Image BlackPawnImage, BlackKnightImage, BlackBishopImage, BlackRookImage, BlackQueenImage, BlackKingImage;
+    // Each piece can be represented by CCTTT in binary where CC represents the color and TTT represents the piece type
+
+    protected static final Image WhitePawnImage = new ImageIcon("assets/textures/white_pawn.png").getImage();
+    protected static final Image WhiteKingImage = new ImageIcon("assets/textures/white_king.png").getImage();
+    protected static final Image WhiteKnightImage = new ImageIcon("assets/textures/white_knight.png").getImage();
+    protected static final Image WhiteBishopImage = new ImageIcon("assets/textures/white_bishop.png").getImage();
+    protected static final Image WhiteRookImage = new ImageIcon("assets/textures/white_rook.png").getImage();
+    protected static final Image WhiteQueenImage = new ImageIcon("assets/textures/white_queen.png").getImage();
+    protected static final Image BlackPawnImage = new ImageIcon("assets/textures/black_pawn.png").getImage();
+    protected static final Image BlackKingImage = new ImageIcon("assets/textures/black_king.png").getImage();
+    protected static final Image BlackKnightImage = new ImageIcon("assets/textures/black_knight.png").getImage();
+    protected static final Image BlackBishopImage = new ImageIcon("assets/textures/black_bishop.png").getImage();
+    protected static final Image BlackRookImage = new ImageIcon("assets/textures/black_rook.png").getImage();
+    protected static final Image BlackQueenImage = new ImageIcon("assets/textures/black_queen.png").getImage();
 
     protected int pieceType;
     protected Image image;
     protected Board board;
-    protected int row, col;  // row going downwards from 0 to 7, col going rightwards from 0 to 7
+    protected int row, col;  // upper left corner is (0,0)
     protected int squareId;
-
-    // Each piece can be represented by CCTTT in binary where CC represents the color and TTT represents the piece type
-
-    protected Piece() {
-        try {
-            BufferedImage spriteSheet = ImageIO.read(new File("assets/textures/pieces.png"));
-            WhiteKingImage = spriteSheet.getSubimage(0, 0, 200, 200);
-            WhiteQueenImage = spriteSheet.getSubimage(200, 0, 200, 200);
-            WhiteBishopImage = spriteSheet.getSubimage(400, 0, 200, 200);
-            WhiteKnightImage = spriteSheet.getSubimage(600, 0, 200, 200);
-            WhiteRookImage = spriteSheet.getSubimage(800, 0, 200, 200);
-            WhitePawnImage = spriteSheet.getSubimage(1000, 0, 200, 200);
-
-            BlackKingImage = spriteSheet.getSubimage(0, 200, 200, 200);
-            BlackQueenImage = spriteSheet.getSubimage(200, 200, 200, 200);
-            BlackBishopImage = spriteSheet.getSubimage(400, 200, 200, 200);
-            BlackKnightImage = spriteSheet.getSubimage(600, 200, 200, 200);
-            BlackRookImage = spriteSheet.getSubimage(800, 200, 200, 200);
-            BlackPawnImage = spriteSheet.getSubimage(1000, 200, 200, 200);
-        } catch (IOException e) {
-            System.out.println("Pieces didn't load :(");
-            e.printStackTrace();
-        }
-    }
 
     public Image getImage() {
         return this.image;
@@ -123,18 +108,18 @@ public abstract class Piece {
 
     public String toString() {
         HashMap<Integer, String> asciiChess = new HashMap<>();
-        asciiChess.put(White + King, "K");
-        asciiChess.put(White + Queen, "Q");
-        asciiChess.put(White + Rook, "R");
-        asciiChess.put(White + Bishop, "B");
-        asciiChess.put(White + Knight, "N");
-        asciiChess.put(White + Pawn, "p");
-        asciiChess.put(Black + King, "k");
-        asciiChess.put(Black + Queen, "q");
-        asciiChess.put(Black + Rook, "r");
-        asciiChess.put(Black + Bishop, "b");
-        asciiChess.put(Black + Knight, "n");
-        asciiChess.put(Black + Pawn, "p");
+        asciiChess.put(White | King, "K");
+        asciiChess.put(White | Queen, "Q");
+        asciiChess.put(White | Rook, "R");
+        asciiChess.put(White | Bishop, "B");
+        asciiChess.put(White | Knight, "N");
+        asciiChess.put(White | Pawn, "p");
+        asciiChess.put(Black | King, "k");
+        asciiChess.put(Black | Queen, "q");
+        asciiChess.put(Black | Rook, "r");
+        asciiChess.put(Black | Bishop, "b");
+        asciiChess.put(Black | Knight, "n");
+        asciiChess.put(Black | Pawn, "p");
         return asciiChess.get(pieceType);
     }
 }
