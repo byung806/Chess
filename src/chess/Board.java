@@ -17,17 +17,18 @@ public class Board extends Chess {
     private final String fen;
     private final Piece[] arrangement;
     private final int size;
-    private final int enPassantSquare;
     public boolean whiteKingSideCastle;
     public boolean whiteQueenSideCastle;
     public boolean blackKingSideCastle;
     public boolean blackQueenSideCastle;
+    private int enPassantSquare;
     private int screenLength;
     private int screenX;
     private int screenY;
     private int colorToMove;
     private int halfMoveClock;
     private int numMoves;
+    private ArrayList<Integer> pinnedPieces;
     private HashMap<Integer, ArrayList<Color>> highlightedSquares;
     private boolean dirty;
     private Piece draggedPiece;
@@ -38,11 +39,7 @@ public class Board extends Chess {
         int size = 0;
         colorToMove = fen.split(" ")[1].equals("w") ? 8 : 16;
         for (char c : fen.split(" ")[0].split("/")[0].toCharArray()) {
-            if (Character.isDigit(c)) {
-                size += Character.getNumericValue(c);
-            } else {
-                size++;
-            }
+            size += Character.isDigit(c) ? Character.getNumericValue(c) : 1;
         }
         this.size = size;
         String castleAvailability = fen.split(" ")[2];
@@ -62,6 +59,7 @@ public class Board extends Chess {
         this.numMoves = Integer.parseInt(fen.split(" ")[5]);
         this.arrangement = Chess.loadFenPosition(fen, this);
         this.fen = fen;
+        this.pinnedPieces = new ArrayList<>();
         this.highlightedSquares = new HashMap<>();
         this.enPassantSquare = -1;
         this.dirty = true;
@@ -202,6 +200,14 @@ public class Board extends Chess {
         }
     }
 
+    public int getEnPassantSquare() {
+        return this.enPassantSquare;
+    }
+
+    public void setEnPassantSquare(int square) {
+        this.enPassantSquare = square;
+    }
+
     public Piece getDraggedPiece() {
         return this.draggedPiece;
     }
@@ -234,5 +240,21 @@ public class Board extends Chess {
             printOut.append(y != size - 1 ? " |\n" : " |");
         }
         return printOut.toString();
+    }
+
+    public ArrayList<Integer> getPinnedPieces() {
+        return pinnedPieces;
+    }
+
+    public void addPinnedPiece(int pinnedPiece) {
+        this.pinnedPieces.add(pinnedPiece);
+    }
+
+    public void removePinnedPiece(int pinnedPiece) {
+        this.pinnedPieces.remove((Integer) pinnedPiece);
+    }
+
+    public void clearPinnedPieces() {
+        this.pinnedPieces = new ArrayList<>();
     }
 }

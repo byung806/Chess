@@ -102,12 +102,9 @@ public abstract class Chess {
 
         if (piece.isSlidingPiece()) {
             ArrayList<ArrayList<Integer>> directions = new ArrayList<>();
-            if (piece.isRookOrQueen()) {
-                directions.addAll(ROOK_QUEEN_MOVES);
-            }
-            if (piece.isBishopOrQueen()) {
-                directions.addAll(BISHOP_QUEEN_MOVES);
-            }
+            if (piece.isRookOrQueen()) { directions.addAll(ROOK_QUEEN_MOVES); }
+            if (piece.isBishopOrQueen()) { directions.addAll(BISHOP_QUEEN_MOVES); }
+
             for (List<Integer> direction : directions) {
                 int x = posX;
                 int y = posY;
@@ -182,8 +179,57 @@ public abstract class Chess {
 
     public static boolean isValidMove(Move move) {
         // todo: check and pins
-        Piece piece = move.getBoard().getArrangement()[move.getStartSquare()];
+        Piece[] arrangement = move.getBoard().getArrangement();
+        Piece piece = arrangement[move.getStartSquare()];
+//        int size = move.getBoard().getSize();
         List<Move> moves = piece.isColor(move.getBoard().getColorToMove()) ? generateMoves(piece) : new ArrayList<>();
+//        for (Piece p : arrangement) {
+//            if (p != null && p.isKing() && p.isColor(piece.color())) { // found same-color king to see if it's pinned
+//                for (ArrayList<Integer> direction : KING_MOVES) {
+//                    ArrayList<Piece> pinned = new ArrayList<>();
+//                    ArrayList<Integer> allCoordsInDirection = new ArrayList<>();
+//                    int x = piece.getCol();
+//                    int y = piece.getRow();
+//                    boolean attackingPiece = false;  // must be true for it to be a pin
+//                    while (x >= 0 && x < size && y >= 0 && y < size) {
+//                        Piece pieceInWay = arrangement[y*size+x];
+//                        if (pieceInWay != null && pieceInWay != piece) {
+//                            if (pieceInWay.isColor(piece.color())) {
+//                                if (pinned.size() > 0) {
+//                                    break;
+//                                } else {
+//                                    pinned.add(pieceInWay);
+//                                }
+//                            } else {
+//                                if (pieceInWay.isSlidingPiece()) {
+//                                    attackingPiece = true;
+//                                    break;
+//                                }
+//                            }
+//                        }
+//                        x += direction.get(0);
+//                        y += direction.get(1);
+//                        allCoordsInDirection.add(y*8 + x);
+//                    }
+//                    if (!attackingPiece) {
+//                        pinned.clear();
+//                    }
+//                    System.out.println(pinned);
+//                    if (pinned.size() > 1) {
+//                        move.getBoard().addPinnedPiece(pinned.get(0).getSquareId());
+//                        for (Move m : moves) {
+//                            if (m.getStartSquare() == pinned.get(0).getSquareId()) {
+//                                if (!allCoordsInDirection.contains(m.getTargetSquare())) {
+//                                    moves.remove(m);
+//                                    System.out.println("removed pinned move " + m);
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//                break;
+//            }
+//        }
         return moves.stream().filter(m -> m.equals(move)).toList().size() != 0;
     }
 }
