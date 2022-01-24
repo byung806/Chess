@@ -17,18 +17,19 @@ public class Board extends Chess {
     private final String fen;
     private final Piece[] arrangement;
     private final int size;
+    private final ArrayList<Piece> kings = new ArrayList<>();
     public boolean whiteKingSideCastle;
     public boolean whiteQueenSideCastle;
     public boolean blackKingSideCastle;
     public boolean blackQueenSideCastle;
     private int enPassantSquare;
+    private Piece enPassantPieceToBeTaken;
     private int screenLength;
     private int screenX;
     private int screenY;
     private int colorToMove;
     private int halfMoveClock;
     private int numMoves;
-    private ArrayList<Integer> pinnedPieces;
     private HashMap<Integer, ArrayList<Color>> highlightedSquares;
     private boolean dirty;
     private Piece draggedPiece;
@@ -58,8 +59,13 @@ public class Board extends Chess {
         this.halfMoveClock = Integer.parseInt(fen.split(" ")[4]);
         this.numMoves = Integer.parseInt(fen.split(" ")[5]);
         this.arrangement = Chess.loadFenPosition(fen, this);
+        for (Piece piece : arrangement) {
+            if (piece != null && piece.isKing()) {
+                this.kings.add(piece);
+            }
+        }
+
         this.fen = fen;
-        this.pinnedPieces = new ArrayList<>();
         this.highlightedSquares = new HashMap<>();
         this.enPassantSquare = -1;
         this.dirty = true;
@@ -205,7 +211,11 @@ public class Board extends Chess {
     }
 
     public void setEnPassantSquare(int square) {
+        // todo: set square back to -1 if another piece moves
         this.enPassantSquare = square;
+        if (square / size == 2) {  // black's side
+
+        }
     }
 
     public Piece getDraggedPiece() {
@@ -226,35 +236,11 @@ public class Board extends Chess {
         dirty = true;
     }
 
+    public ArrayList<Piece> getKings() {
+        return this.kings;
+    }
+
     public String toString() {
-        StringBuilder printOut = new StringBuilder();
-        for (int y = 0; y < size; y++) {
-            printOut.append("| ");
-            for (int x = 0; x < size; x++) {
-                Piece piece = arrangement[y * size + x];
-                printOut.append(piece != null ? piece : " ");
-                if (x != size - 1) {
-                    printOut.append(" ");
-                }
-            }
-            printOut.append(y != size - 1 ? " |\n" : " |");
-        }
-        return printOut.toString();
-    }
-
-    public ArrayList<Integer> getPinnedPieces() {
-        return pinnedPieces;
-    }
-
-    public void addPinnedPiece(int pinnedPiece) {
-        this.pinnedPieces.add(pinnedPiece);
-    }
-
-    public void removePinnedPiece(int pinnedPiece) {
-        this.pinnedPieces.remove((Integer) pinnedPiece);
-    }
-
-    public void clearPinnedPieces() {
-        this.pinnedPieces = new ArrayList<>();
+        return Chess.getPrintableArrangement(this.arrangement);
     }
 }

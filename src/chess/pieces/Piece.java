@@ -66,10 +66,6 @@ public abstract class Piece {
         this.row = (squareId - this.col) / board.getSize();
     }
 
-    public int getTypeID() {
-        return this.pieceType;
-    }
-
     public boolean isColor(int color) {
         return (this.pieceType & colorMask) == color;
     }
@@ -79,31 +75,35 @@ public abstract class Piece {
     }
 
     public int pieceType() {
-        return this.pieceType & typeMask;
+        return this.pieceType;
     }
 
-    public boolean isRookOrQueen() {
-        return (this.pieceType & 0b110) == 0b110;
+    public boolean isRook() {
+        return (this.pieceType & typeMask) == Rook;
     }
 
-    public boolean isBishopOrQueen() {
-        return (this.pieceType & 0b101) == 0b101;
+    public boolean isBishop() {
+        return (this.pieceType & typeMask) == Bishop;
+    }
+
+    public boolean isQueen() {
+        return (this.pieceType & typeMask) == Queen;
     }
 
     public boolean isKing() {
-        return this.pieceType % 0b1000 == Piece.King;
+        return (this.pieceType & typeMask) == King;
     }
 
     public boolean isKnight() {
-        return this.pieceType % 0b1000 == Piece.Knight;
+        return (this.pieceType & typeMask) == Knight;
     }
 
     public boolean isPawn() {
-        return this.pieceType % 0b1000 == Piece.Pawn;
+        return (this.pieceType & typeMask) == Pawn;
     }
 
     public boolean isSlidingPiece() {
-        return (this.pieceType & 0b100) != 0;
+        return (this.pieceType & 0b100) == 0b100;
     }
 
     public String toString() {
@@ -113,7 +113,7 @@ public abstract class Piece {
         asciiChess.put(White | Rook, "R");
         asciiChess.put(White | Bishop, "B");
         asciiChess.put(White | Knight, "N");
-        asciiChess.put(White | Pawn, "p");
+        asciiChess.put(White | Pawn, "P");
         asciiChess.put(Black | King, "k");
         asciiChess.put(Black | Queen, "q");
         asciiChess.put(Black | Rook, "r");
