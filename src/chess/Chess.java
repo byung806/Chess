@@ -104,66 +104,54 @@ public abstract class Chess {
         int start = piece.getSquareId();
 
         int[][] directions = {};
-        if (piece.isSlidingPiece()) {
-            if (piece.isRook()) {
-                directions = ROOK_MOVES;
-            } else if (piece.isBishop()) {
-                directions = BISHOP_MOVES;
-            } else if (piece.isQueen()) {
-                directions = QUEEN_MOVES;
+        if (piece.isRook()) {
+            directions = ROOK_MOVES;
+        } else if (piece.isBishop()) {
+            directions = BISHOP_MOVES;
+        } else if (piece.isQueen()) {
+            directions = QUEEN_MOVES;
+        } else if (piece.isKing()) {
+            // todo: castling
+            directions = KING_MOVES;
+        } else if (piece.isKnight()) {
+            directions = KNIGHT_MOVES;
+        } else if (piece.isPawn()) {
+            if (pieceColor == Piece.White) {
+                directions = WHITE_PAWN_MOVES;
+            } else {
+                directions = BLACK_PAWN_MOVES;
             }
-            for (int[] direction : directions) {
-                int x = posX;
-                int y = posY;
-                while (x >= 0 && x < size && y >= 0 && y < size) {
-                    Piece pieceInWay = arrangement[y * size + x];
-                    if (pieceInWay != null && pieceInWay != piece) {
-                        if (!pieceInWay.isColor(pieceColor)) {
+        }
+
+        directionLoop:
+        for (int[] direction : directions) {
+            int x = posX;
+            int y = posY;
+            while (x >= 0 && x < size && y >= 0 && y < size) {
+                Piece pieceInWay = arrangement[y * size + x];
+                if (pieceInWay != piece) {
+                    if (pieceInWay != null) {
+                        if (!pieceInWay.isColor(pieceColor) && ((piece.isPawn() && direction[0] != 0) || !piece.isPawn())) {
+                            // if piece in way of sliding piece or pawn has a piece to capture or piece is normal piece
                             moves.add(new Move(board, start, y * size + x));
+                        } else {  // piece is same color or move is normal pawn move or piece is not pawn
+                            if (piece.isPawn() && direction[0] == 0) {  // piece in way of pawn
+                                break directionLoop;
+                            }
                         }
                         break;
-                    }
-                    if (start != y * size + x) {
-                        moves.add(new Move(board, start, y * size + x));
-                    }
-                    x += direction[0];
-                    y += direction[1];
-                }
-            }
-        } else {
-            if (piece.isKing()) {
-                // todo: castling
-                directions = KING_MOVES;
-            } else if (piece.isKnight()) {
-                directions = KNIGHT_MOVES;
-            } else if (piece.isPawn()) {
-                if (pieceColor == Piece.White) {
-                    directions = WHITE_PAWN_MOVES;
-                } else {
-                    directions = BLACK_PAWN_MOVES;
-                }
-            }
-            for (int[] direction : directions) {
-                int x = posX + direction[0];
-                int y = posY + direction[1];
-                if (x >= 0 && x < size && y >= 0 && y < size) {
-                    Piece pieceInWay = arrangement[y * size + x];
-                    if (piece.isPawn()) {
-                        // todo: add en passant
-                        if (direction[0] == 1 || direction[0] == -1) {
-                            if (pieceInWay == null) {
-                                continue;
-                            }
-                        } else if ((pieceInWay != null || (direction[1] == -2 && posY != size - 2) || (direction[1] == 2 && posY != 1))) {
+                    } else {  // no piece in way
+                        if (piece.isPawn() && direction[0] != 0) {  // pawn finds no piece to capture
                             break;
                         }
-                    } else {
-                        if (pieceInWay != null && pieceInWay.isColor(pieceColor)) {
-                            continue;
-                        }
+                        moves.add(new Move(board, start, y * size + x));
                     }
-                    moves.add(new Move(board, start, y * size + x));
+                    if (!piece.isSlidingPiece()) {
+                        break;
+                    }
                 }
+                x += direction[0];
+                y += direction[1];
             }
         }
 
