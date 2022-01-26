@@ -18,10 +18,10 @@ public class Board extends Chess {
     private final Piece[] arrangement;
     private final int size;
     private final ArrayList<Piece> kings = new ArrayList<>();
-    public boolean whiteKingSideCastle;
-    public boolean whiteQueenSideCastle;
-    public boolean blackKingSideCastle;
-    public boolean blackQueenSideCastle;
+    private boolean whiteKingSideCastle;
+    private boolean whiteQueenSideCastle;
+    private boolean blackKingSideCastle;
+    private boolean blackQueenSideCastle;
     private int enPassantSquare;
     private Piece enPassantPieceToBeTaken;
     private int screenLength;
@@ -211,10 +211,13 @@ public class Board extends Chess {
     }
 
     public void setEnPassantSquare(int square) {
-        // todo: set square back to -1 if another piece moves
         this.enPassantSquare = square;
         if (square / size == 2) {  // black's side
-
+            enPassantPieceToBeTaken = arrangement[square + size];
+        } else if (square / size == size - 3) {  // white's side
+            enPassantPieceToBeTaken = arrangement[square - size];
+        } else {
+            enPassantPieceToBeTaken = null;
         }
     }
 
@@ -242,5 +245,21 @@ public class Board extends Chess {
 
     public String toString() {
         return Chess.getPrintableArrangement(this.arrangement);
+    }
+
+    public boolean WhiteKingSideCastle() {
+        return whiteKingSideCastle;
+    }
+
+    public boolean WhiteQueenSideCastle() {
+        return whiteQueenSideCastle;
+    }
+
+    public boolean BlackKingSideCastle() {
+        return blackKingSideCastle;
+    }
+
+    public boolean BlackQueenSideCastle() {
+        return blackQueenSideCastle;
     }
 }

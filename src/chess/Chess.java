@@ -51,6 +51,48 @@ public abstract class Chess {
         return board;
     }
 
+    public static String generateFenPosition(Board board) {
+        Piece[] arrangement = board.getArrangement();
+        StringBuilder fen = new StringBuilder();
+        int size = board.getSize();
+        int emptyCount = 0;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (arrangement[i * 8 + j] == null) {
+                    emptyCount++;
+                } else {
+                    fen.append(emptyCount != 0 ? emptyCount : "");
+                    fen.append(arrangement[i * 8 + j]);
+                    emptyCount = 0;
+                }
+            }
+            fen.append(emptyCount != 0 ? emptyCount : "");
+            emptyCount = 0;
+            if (i != size - 1) {
+                fen.append("/");
+            }
+        }
+        fen.append(board.getColorToMove() == Piece.White ? " w " : " b ");
+        fen.append(board.WhiteKingSideCastle() ? "K" : "").append(board.WhiteQueenSideCastle() ? "Q" : "");
+        fen.append(board.BlackKingSideCastle() ? "k" : "").append(board.BlackQueenSideCastle() ? "q " : " ");
+        fen.append(board.getEnPassantSquare() != -1 ? squareToAlgebraicNotation(board.getEnPassantSquare(), board.getSize()) : "-");
+        fen.append(" ").append(board.getHalfMoveClock()).append(" ").append(board.getNumMoves());
+        return fen.toString();
+    }
+
+    public static String squareToAlgebraicNotation(int squareId, int size) {
+        int x = squareId % size;  // number
+        int y = size - (squareId / size);  // letter
+        StringBuilder letters = new StringBuilder();
+        while (y > 0) {
+            letters.append((char) (y % 26 + 96));
+            y = y / 26;
+        }
+        letters.reverse();
+        // generates letters a b c ... y z aa ab ac ... aaa aab aac
+        return letters.toString() + x;
+    }
+
     private static List<Move> generateMoves(Piece piece) {
         List<Move> moves = new ArrayList<>();
         Board board = piece.getBoard();
@@ -132,10 +174,11 @@ public abstract class Chess {
             testArrangement[move.getStartSquare()] = null;
             testArrangement[move.getTargetSquare()] = movingPiece;
             outerLoop:
-            for (Piece king : board.getKings()) {
-                int originX = king.getCol();
-                int originY = king.getRow();
-                if (king.isColor(pieceColor)) {
+            for (int sq = 0; sq < testArrangement.length; sq++) {
+                Piece king = testArrangement[sq];
+                if (king != null && king.isKing() && king.isColor(pieceColor)) {
+                    int originX = sq % size;
+                    int originY = sq / size;
                     for (int[] dir : QUEEN_MOVES) {
                         int x = originX;
                         int y = originY;
@@ -144,7 +187,7 @@ public abstract class Chess {
                             if (pieceInWay != null && pieceInWay != king) {
                                 if (((Arrays.stream(ROOK_MOVES).anyMatch(e -> Arrays.equals(e, dir)) && pieceInWay.isRook())
                                         || (Arrays.stream(BISHOP_MOVES).anyMatch(e -> Arrays.equals(e, dir)) && pieceInWay.isBishop())
-                                        || pieceInWay.isQueen()) && !pieceInWay.isColor(king.color())) {
+                                        || pieceInWay.isQueen()) && !pieceInWay.isColor(pieceColor)) {
                                     moves.remove(move);
                                     break outerLoop;
                                 }
@@ -157,7 +200,6 @@ public abstract class Chess {
                 }
             }
         }
-
         return moves;
     }
 
@@ -175,7 +217,6 @@ public abstract class Chess {
     }
 
     public static boolean isValidMove(Move move) {
-        // todo: check
         Piece[] arrangement = move.getBoard().getArrangement();
         Piece piece = arrangement[move.getStartSquare()];
         List<Move> moves = piece.isColor(move.getBoard().getColorToMove()) ? generateMoves(piece) : new ArrayList<>();
@@ -189,7 +230,7 @@ public abstract class Chess {
             printOut.append("| ");
             for (int x = 0; x < size; x++) {
                 Piece piece = arrangement[y * size + x];
-                printOut.append(piece != null ? piece : " ");
+                printOut.append(piece != null ? piece : ".");
                 if (x != size - 1) {
                     printOut.append(" ");
                 }
