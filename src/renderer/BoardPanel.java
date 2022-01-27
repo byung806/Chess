@@ -1,6 +1,7 @@
 package renderer;
 
 import chess.Board;
+import chess.Chess;
 import chess.pieces.Piece;
 import listener.ClickListener;
 
@@ -25,6 +26,7 @@ public class BoardPanel extends JPanel {
 
     @Override
     public void paintComponent(Graphics g) {
+        // main update loop
         board.setScreenX(getWidth() / 2);
         board.setScreenY(getHeight() / 2);
         board.setScreenLength(Math.round(((float) Math.min(getWidth(), getHeight()) * 13 / 16) / board.getSize()) * board.getSize());
@@ -34,6 +36,7 @@ public class BoardPanel extends JPanel {
         if (board.isDirty() || (board.getDraggedPiece() != null && mousePos != null)) {
             // draw board
             drawBaseBoard(board);
+            drawRankFileLabels(board);
             drawHighlightedSquares(board);
             drawPieces(board);
             board.setClean();
@@ -62,21 +65,46 @@ public class BoardPanel extends JPanel {
         int size = board.getSize();
         for (int rank = 0; rank < size; rank++) {
             for (int file = 0; file < size; file++) {
-                boolean isLightSquare = (file + rank) % 2 != 0;
-                Color otherColor;
+                boolean isLightSquare = (file + rank) % 2 == 0;
                 if (isLightSquare) {
                     g.setPaint(new Color(0.937f, 0.850f, 0.717f, 1.0f));
-                    otherColor = new Color(0.705f, 0.533f, 0.401f, 1.0f);
                 } else {
                     g.setPaint(new Color(0.705f, 0.533f, 0.401f, 1.0f));
-                    otherColor = new Color(0.937f, 0.850f, 0.717f, 1.0f);
                 }
                 int x = centerX - boardSideLength / 2 + rank * boardSideLength / board.getSize();
                 int y = centerY - boardSideLength / 2 + file * boardSideLength / board.getSize();
                 g.fillRect(x, y, boardSideLength / board.getSize(), boardSideLength / board.getSize());
+            }
+        }
+    }
 
-                g.setPaint(otherColor);
-                g.drawString("a", x, y);
+    public void drawRankFileLabels(Board board) {
+        int boardSideLength = board.getScreenLength();
+        int size = board.getSize();
+        int fontSize = 1;
+        while (g.getFontMetrics(new Font("Trebuchet MS", Font.PLAIN, fontSize)).getHeight() < boardSideLength / (size * 4)) {
+            fontSize++;
+        }
+        Font font = new Font("Trebuchet MS", Font.PLAIN, fontSize);
+        g.setFont(font);
+
+        for (int i = 0; i < size * size; i++) {  // drawString draws lower left corner
+            int x = i % size;
+            int y = i / size;
+            if ((x + y) % 2 == 0) {
+                g.setPaint(new Color(0.705f, 0.533f, 0.401f, 1.0f));
+            } else {
+                g.setPaint(new Color(0.937f, 0.850f, 0.717f, 1.0f));
+            }
+            if (x == 0) {  // left side numbers
+                int drawX = board.getScreenX() - boardSideLength / 2 + boardSideLength / size / 12;
+                int drawY = board.getScreenY() + (int) ((y - size / 2f) * (boardSideLength / size)) + boardSideLength / size / 4;
+                g.drawString(String.valueOf(size - y), drawX, drawY);
+            }
+            if (y == size - 1) {  // bottom side letters
+                int drawX = board.getScreenX() + (int) ((x - size / 2f + 1) * (boardSideLength / size)) - boardSideLength / size / 6;
+                int drawY = board.getScreenY() + boardSideLength / 2 - boardSideLength / size / 12;
+                g.drawString(Chess.xToPrintableLetters(x + 1), drawX, drawY);
             }
         }
     }

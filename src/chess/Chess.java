@@ -81,16 +81,19 @@ public abstract class Chess {
     }
 
     public static String squareToAlgebraicNotation(int squareId, int size) {
-        int x = squareId % size;  // number
-        int y = size - (squareId / size);  // letter
+        int x = squareId % size;  // letter
+        int y = size - (squareId / size);  // number
+        return xToPrintableLetters(x) + y;
+    }
+
+    public static String xToPrintableLetters(int x) {
         StringBuilder letters = new StringBuilder();
-        while (y > 0) {
-            letters.append((char) (y % 26 + 96));
-            y = y / 26;
+        while (x > 0) {
+            letters.append((char) (x % 26 + 96));
+            x = x / 26;
         }
         letters.reverse();
-        // generates letters a b c ... y z aa ab ac ... aaa aab aac
-        return letters.toString() + x;
+        return letters.toString();
     }
 
     private static List<Move> generateMoves(Piece piece) {
