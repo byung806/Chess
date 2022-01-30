@@ -1,7 +1,6 @@
 package listener;
 
 import chess.Board;
-import chess.Chess;
 import chess.Move;
 import chess.pieces.Piece;
 import renderer.BoardPanel;
@@ -59,7 +58,7 @@ public class ClickListener extends MouseAdapter {
         if (draggedPiece != null) {
             int start = draggedPiece.getSquareId();
             Move move = squareId != -1 && squareId != start ? new Move(board, start, squareId) : null;
-            if (move != null && Chess.isValidMove(move)) {
+            if (move != null && board.isValidCurrentMove(move)) {
                 board.clearHighlightedSquares();
                 board.addHighlightedSquare(start, Board.MOVED_COLOR);
                 board.addHighlightedSquare(squareId, Board.MOVED_COLOR);

@@ -96,8 +96,8 @@ public abstract class Chess {
         return letters.toString();
     }
 
-    private static List<Move> generateMoves(Piece piece) {
-        List<Move> moves = new ArrayList<>();
+    private static ArrayList<Move> generateMoves(Piece piece) {
+        ArrayList<Move> moves = new ArrayList<>();
         Board board = piece.getBoard();
         Piece[] arrangement = board.getArrangement();
         int posX = piece.getCol();
@@ -158,6 +158,7 @@ public abstract class Chess {
             }
         }
 
+        //todo: knight pawn check: keep track of attacked squares
         for (int i = moves.size() - 1; i >= 0; i--) {
             Move move = moves.get(i);
             Piece[] testArrangement = arrangement.clone();
@@ -194,8 +195,8 @@ public abstract class Chess {
         return moves;
     }
 
-    public static List<Move> generateAllMoves(Board board) {
-        List<Move> moves = new ArrayList<>();
+    public static ArrayList<Move> generateAllMoves(Board board) {
+        ArrayList<Move> moves = new ArrayList<>();
         Piece[] arrangement = board.getArrangement();
         int colorToMove = board.getColorToMove();
         for (int start = 0; start < board.getSize() * board.getSize(); start++) {
@@ -207,8 +208,7 @@ public abstract class Chess {
         return moves;
     }
 
-    public static boolean isValidMove(Move move) {
-        Piece[] arrangement = move.getBoard().getArrangement();
+    public static boolean isValidMove(Move move, Piece[] arrangement) {
         Piece piece = arrangement[move.getStartSquare()];
         List<Move> moves = piece.isColor(move.getBoard().getColorToMove()) ? generateMoves(piece) : new ArrayList<>();
         return moves.stream().filter(m -> m.equals(move)).toList().size() != 0;

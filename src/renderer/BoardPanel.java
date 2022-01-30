@@ -82,10 +82,10 @@ public class BoardPanel extends JPanel {
         int boardSideLength = board.getScreenLength();
         int size = board.getSize();
         int fontSize = 1;
-        while (g.getFontMetrics(new Font("Trebuchet MS", Font.PLAIN, fontSize)).getHeight() < boardSideLength / (size * 4)) {
+        while (g.getFontMetrics(new Font("Trebuchet MS", Font.BOLD, fontSize)).getHeight() < boardSideLength / (size * 4)) {
             fontSize++;
         }
-        Font font = new Font("Trebuchet MS", Font.PLAIN, fontSize);
+        Font font = new Font("Trebuchet MS", Font.BOLD, fontSize);
         g.setFont(font);
 
         for (int i = 0; i < size * size; i++) {  // drawString draws lower left corner

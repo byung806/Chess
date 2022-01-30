@@ -13,11 +13,10 @@ public class Board extends Chess {
 
     public static int KING_SIDE_CASTLE = 0;
     public static int QUEEN_SIDE_CASTLE = 1;
-
-    private final String fen;
     private final Piece[] arrangement;
     private final int size;
     private final ArrayList<Piece> kings = new ArrayList<>();
+    private String fen;
     private boolean whiteKingSideCastle;
     private boolean whiteQueenSideCastle;
     private boolean blackKingSideCastle;
@@ -30,6 +29,7 @@ public class Board extends Chess {
     private int colorToMove;
     private int halfMoveClock;
     private int numMoves;
+    private ArrayList<Move> moves;
     private HashMap<Integer, ArrayList<Color>> highlightedSquares;
     private boolean dirty;
     private Piece draggedPiece;
@@ -66,6 +66,7 @@ public class Board extends Chess {
         }
 
         this.fen = fen;
+        this.moves = generateAllMoves(this);
         this.highlightedSquares = new HashMap<>();
         this.enPassantSquare = -1;
         this.dirty = true;
@@ -122,6 +123,8 @@ public class Board extends Chess {
         arrangement[start] = null;
         arrangement[move.getTargetSquare()] = toMove;
         this.colorToMove = this.colorToMove == Piece.White ? Piece.Black : Piece.White;
+        this.fen = generateFenPosition(this);
+        this.moves = generateAllMoves(this);
         this.dirty = true;
     }
 
@@ -261,5 +264,9 @@ public class Board extends Chess {
 
     public boolean BlackQueenSideCastle() {
         return blackQueenSideCastle;
+    }
+
+    public boolean isValidCurrentMove(Move move) {
+        return this.moves.stream().filter(m -> m.equals(move)).toList().size() != 0;
     }
 }
