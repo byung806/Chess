@@ -108,7 +108,6 @@ public class Board extends Chess {
         Piece toMove = arrangement[start];
         if (toMove.isColor(Piece.Black)) {
             incrementNumMoves();
-            System.out.println(numMoves);
         }
         if (move.isCastle()) {
             if (move.getCastleType() == KING_SIDE_CASTLE && move.getColor() == Piece.White) {
