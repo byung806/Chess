@@ -50,6 +50,9 @@ public class ClickListener extends MouseAdapter {
                     return;
                 } else {
                     board.removeHighlightedSquare(start);
+                    if (start == squareId) {
+                        piece = null;
+                    }
                 }
             }
             board.setSelectedPiece(piece);
