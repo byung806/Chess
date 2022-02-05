@@ -38,8 +38,19 @@ public class ClickListener extends MouseAdapter {
             // todo: add arrows and square highlighting
         } else if (e.getButton() == 1) {
             if (board.getSelectedPiece() != null) {
-                int selectedPieceSq = board.getSelectedPiece().getSquareId();
-                board.removeHighlightedSquare(selectedPieceSq);
+                int start = board.getSelectedPiece().getSquareId();
+                Move move = new Move(board, start, squareId);
+                if (board.isCurrentValidMove(move)) {
+                    board.clearHighlightedSquares();
+                    board.addHighlightedSquare(start, Board.MOVED_COLOR);
+                    board.addHighlightedSquare(squareId, Board.MOVED_COLOR);
+                    board.executeMove(move);
+                    board.setSelectedPiece(null);
+                    panel.repaint();
+                    return;
+                } else {
+                    board.removeHighlightedSquare(start);
+                }
             }
             board.setSelectedPiece(piece);
             board.setDraggedPiece(piece);
@@ -58,7 +69,7 @@ public class ClickListener extends MouseAdapter {
         if (draggedPiece != null) {
             int start = draggedPiece.getSquareId();
             Move move = squareId != -1 && squareId != start ? new Move(board, start, squareId) : null;
-            if (move != null && board.isValidCurrentMove(move)) {
+            if (move != null && board.isCurrentValidMove(move)) {
                 board.clearHighlightedSquares();
                 board.addHighlightedSquare(start, Board.MOVED_COLOR);
                 board.addHighlightedSquare(squareId, Board.MOVED_COLOR);

@@ -9,31 +9,32 @@ import java.util.HashMap;
 public class Board extends Chess {
     public static Color MOVED_COLOR = new Color(0.188f, 0.670f, 0.556f, 0.8f);
     public static Color SELECTED_COLOR = new Color(0.396f, 0.886f, 0.772f, 0.8f);
+    public static Color VALID_MOVES_COLOR = new Color(0.501f, 0.918f, 0.781f, 0.2f);
     public static Color RED = new Color(0.982f, 0.102f, 0.105f, 0.8f);
-
     public static int KING_SIDE_CASTLE = 0;
     public static int QUEEN_SIDE_CASTLE = 1;
+
     private final Piece[] arrangement;
-    private final int size;
     private final ArrayList<Piece> kings = new ArrayList<>();
-    private String fen;
+    private final int size;
+    private Piece draggedPiece;
+    private Piece selectedPiece;
+    private int enPassantSquare;
+    private Piece enPassantPieceToBeTaken;
+    private HashMap<Integer, ArrayList<Color>> highlightedSquares;
+    private ArrayList<Move> moves;
     private boolean whiteKingSideCastle;
     private boolean whiteQueenSideCastle;
     private boolean blackKingSideCastle;
     private boolean blackQueenSideCastle;
-    private int enPassantSquare;
-    private Piece enPassantPieceToBeTaken;
-    private int screenLength;
-    private int screenX;
-    private int screenY;
     private int colorToMove;
     private int halfMoveClock;
     private int numMoves;
-    private ArrayList<Move> moves;
-    private HashMap<Integer, ArrayList<Color>> highlightedSquares;
+    private String fen;
     private boolean dirty;
-    private Piece draggedPiece;
-    private Piece selectedPiece;
+    private int screenLength;
+    private int screenX;
+    private int screenY;
 
     public Board(String fen) {
         // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
@@ -107,6 +108,7 @@ public class Board extends Chess {
         Piece toMove = arrangement[start];
         if (toMove.isColor(Piece.Black)) {
             incrementNumMoves();
+            System.out.println(numMoves);
         }
         if (move.isCastle()) {
             if (move.getCastleType() == KING_SIDE_CASTLE && move.getColor() == Piece.White) {
@@ -266,7 +268,7 @@ public class Board extends Chess {
         return blackQueenSideCastle;
     }
 
-    public boolean isValidCurrentMove(Move move) {
+    public boolean isCurrentValidMove(Move move) {
         return this.moves.stream().filter(m -> m.equals(move)).toList().size() != 0;
     }
 }
