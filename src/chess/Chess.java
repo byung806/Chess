@@ -10,7 +10,7 @@ public abstract class Chess {
     private static final int[][] ROOK_MOVES = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
     private static final int[][] BISHOP_MOVES = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
     private static final int[][] QUEEN_MOVES = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
-    private static final int[][] KING_MOVES = {{1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}, {-1, 1}, {0, 1}};
+    private static final int[][] KING_MOVES = {{1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}, {-1, 1}, {0, 1}, {2, 0}, {-2, 0}};
     private static final int[][] KNIGHT_MOVES = {{1, 2}, {2, 1}, {2, -1}, {1, -2}, {-1, -2}, {-2, -1}, {-2, 1}, {-1, 2}};
     private static final int[][] WHITE_PAWN_MOVES = {{1, -1}, {-1, -1}, {0, -1}, {0, -2}};
     private static final int[][] BLACK_PAWN_MOVES = {{1, 1}, {-1, 1}, {0, 1}, {0, 2}};
@@ -165,34 +165,41 @@ public abstract class Chess {
             Piece movingPiece = testArrangement[move.getStartSquare()];
             testArrangement[move.getStartSquare()] = null;
             testArrangement[move.getTargetSquare()] = movingPiece;
-            outerLoop:
             for (int sq = 0; sq < testArrangement.length; sq++) {
                 Piece king = testArrangement[sq];
                 if (king != null && king.isKing() && king.isColor(pieceColor)) {
-                    int originX = sq % size;
-                    int originY = sq / size;
-                    for (int[] dir : QUEEN_MOVES) {
-                        int x = originX;
-                        int y = originY;
-                        while (x >= 0 && x < size && y >= 0 && y < size) {
-                            Piece pieceInWay = testArrangement[y * 8 + x];
-                            if (pieceInWay != null && pieceInWay != king) {
-                                if (((Arrays.stream(ROOK_MOVES).anyMatch(e -> Arrays.equals(e, dir)) && pieceInWay.isRook())
-                                        || (Arrays.stream(BISHOP_MOVES).anyMatch(e -> Arrays.equals(e, dir)) && pieceInWay.isBishop())
-                                        || pieceInWay.isQueen()) && !pieceInWay.isColor(pieceColor)) {
-                                    moves.remove(move);
-                                    break outerLoop;
-                                }
-                                break;
-                            }
-                            x += dir[0];
-                            y += dir[1];
-                        }
+                    if (squareIsAttacked(sq, pieceColor, testArrangement)) {
+                        moves.remove(move);
                     }
                 }
             }
         }
         return moves;
+    }
+
+    public static boolean squareIsAttacked(int squareId, int originSquarePieceColor, Piece[] arrangement) {
+        int size = (int) Math.ceil(Math.sqrt(arrangement.length));
+        Piece piece = arrangement[squareId];
+        int originX = squareId % size;
+        int originY = squareId / size;
+        for (int[] dir : QUEEN_MOVES) {
+            int x = originX;
+            int y = originY;
+            while (x >= 0 && x < size && y >= 0 && y < size) {
+                Piece pieceInWay = arrangement[y * 8 + x];
+                if (pieceInWay != null && pieceInWay != piece) {
+                    if (((Arrays.stream(ROOK_MOVES).anyMatch(e -> Arrays.equals(e, dir)) && pieceInWay.isRook())
+                            || (Arrays.stream(BISHOP_MOVES).anyMatch(e -> Arrays.equals(e, dir)) && pieceInWay.isBishop())
+                            || pieceInWay.isQueen()) && !pieceInWay.isColor(originSquarePieceColor)) {
+                        return true;
+                    }
+                    break;
+                }
+                x += dir[0];
+                y += dir[1];
+            }
+        }
+        return false;
     }
 
     public static ArrayList<Move> generateAllMoves(Board board) {

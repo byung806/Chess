@@ -9,7 +9,7 @@ import java.util.HashMap;
 public class Board extends Chess {
     public static Color MOVED_COLOR = new Color(0.188f, 0.670f, 0.556f, 0.8f);
     public static Color SELECTED_COLOR = new Color(0.396f, 0.886f, 0.772f, 0.8f);
-    public static Color VALID_MOVES_COLOR = new Color(0.501f, 0.918f, 0.781f, 0.2f);
+    public static Color VALID_MOVES_COLOR = new Color(0.501f, 0.501f, 0.501f, 0.2f);
     public static Color RED = new Color(0.982f, 0.102f, 0.105f, 0.8f);
     public static int KING_SIDE_CASTLE = 0;
     public static int QUEEN_SIDE_CASTLE = 1;
@@ -126,6 +126,9 @@ public class Board extends Chess {
         this.colorToMove = this.colorToMove == Piece.White ? Piece.Black : Piece.White;
         this.fen = generateFenPosition(this);
         this.moves = generateAllMoves(this);
+        if (this.moves.isEmpty()) {
+            System.out.println("Checkmate!");
+        }
         this.dirty = true;
     }
 
