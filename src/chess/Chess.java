@@ -157,8 +157,6 @@ public abstract class Chess {
                 y += direction[1];
             }
         }
-
-        //todo: knight pawn check: keep track of attacked squares
         for (int i = moves.size() - 1; i >= 0; i--) {
             Move move = moves.get(i);
             Piece[] testArrangement = arrangement.clone();
@@ -186,7 +184,7 @@ public abstract class Chess {
             int x = originX;
             int y = originY;
             while (x >= 0 && x < size && y >= 0 && y < size) {
-                Piece pieceInWay = arrangement[y * 8 + x];
+                Piece pieceInWay = arrangement[y * size + x];
                 if (pieceInWay != null && pieceInWay != piece) {
                     if (((Arrays.stream(ROOK_MOVES).anyMatch(e -> Arrays.equals(e, dir)) && pieceInWay.isRook())
                             || (Arrays.stream(BISHOP_MOVES).anyMatch(e -> Arrays.equals(e, dir)) && pieceInWay.isBishop())
@@ -197,6 +195,32 @@ public abstract class Chess {
                 }
                 x += dir[0];
                 y += dir[1];
+            }
+        }
+        int[][] pawnAttacks;
+        if (originSquarePieceColor == Piece.White) {
+            pawnAttacks = new int[][]{{1,-1}, {-1,-1}};
+        } else {
+            pawnAttacks = new int[][]{{1,1}, {-1,1}};
+        }
+        for (int[] dir : KNIGHT_MOVES) {
+            int x = originX + dir[0];
+            int y = originY + dir[1];
+            if (x >= 0 && x < size && y >= 0 && y < size) {
+                Piece inWay = arrangement[y * size + x];
+                if (inWay != null && inWay.isKnight() && !inWay.isColor(originSquarePieceColor)) {
+                    return true;
+                }
+            }
+        }
+        for (int[] dir : pawnAttacks) {
+            int x = originX + dir[0];
+            int y = originY + dir[1];
+            if (x >= 0 && x < size && y >= 0 && y < size) {
+                Piece inWay = arrangement[y * size + x];
+                if (inWay != null && inWay.isPawn() && !inWay.isColor(originSquarePieceColor)) {
+                    return true;
+                }
             }
         }
         return false;
