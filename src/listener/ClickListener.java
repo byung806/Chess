@@ -39,8 +39,8 @@ public class ClickListener extends MouseAdapter {
         } else if (e.getButton() == 1) {
             if (board.getSelectedPiece() != null) {
                 int start = board.getSelectedPiece().getSquareId();
-                Move move = new Move(board, start, squareId);
-                if (board.isCurrentValidMove(move)) {
+                Move move = board.findMatchInValidMoves(new Move(board, start, squareId));
+                if (move != null) {
                     board.clearHighlightedSquares();
                     board.addHighlightedSquare(start, Board.MOVED_COLOR);
                     board.addHighlightedSquare(squareId, Board.MOVED_COLOR);
@@ -76,7 +76,7 @@ public class ClickListener extends MouseAdapter {
                 board.clearHighlightedSquares();
                 board.addHighlightedSquare(start, Board.MOVED_COLOR);
                 board.addHighlightedSquare(squareId, Board.MOVED_COLOR);
-                board.executeMove(move);
+                board.executeMove(board.findMatchInValidMoves(move));
                 board.setSelectedPiece(null);
             }
         }

@@ -5,6 +5,7 @@ import chess.pieces.Piece;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class Board extends Chess {
     public static Color MOVED_COLOR = new Color(0.188f, 0.670f, 0.556f, 0.8f);
@@ -110,19 +111,21 @@ public class Board extends Chess {
             incrementNumMoves();
         }
         if (move.isCastle()) {
-            if (move.getCastleType() == KING_SIDE_CASTLE && move.getColor() == Piece.White) {
+            if (toMove.isColor(Piece.White)) {
                 whiteKingSideCastle = false;
-            } else if (move.getCastleType() == KING_SIDE_CASTLE && move.getColor() == Piece.Black) {
-                blackKingSideCastle = false;
-            } else if (move.getCastleType() == QUEEN_SIDE_CASTLE && move.getColor() == Piece.White) {
                 whiteQueenSideCastle = false;
-            } else if (move.getCastleType() == QUEEN_SIDE_CASTLE && move.getColor() == Piece.Black) {
+            } else {
+                blackKingSideCastle = false;
                 blackQueenSideCastle = false;
             }
+            Piece rook = arrangement[move.getRookPos()];
+            rook.setSquareId(move.getTargetSquare() + (move.getCastleType() == KING_SIDE_CASTLE ? -1 : 1));
+            arrangement[move.getRookPos()] = null;
+            arrangement[move.getTargetSquare() + (move.getCastleType() == KING_SIDE_CASTLE ? -1 : 1)] = rook;
         }
-        toMove.setSquareId(move.getTargetSquare());
         arrangement[start] = null;
         arrangement[move.getTargetSquare()] = toMove;
+        toMove.setSquareId(move.getTargetSquare());
         this.colorToMove = this.colorToMove == Piece.White ? Piece.Black : Piece.White;
         this.fen = generateFenPosition(this);
         this.moves = generateAllMoves(this);
@@ -271,6 +274,11 @@ public class Board extends Chess {
     }
 
     public boolean isCurrentValidMove(Move move) {
-        return this.moves.stream().filter(m -> m.equals(move)).toList().size() != 0;
+        return findMatchInValidMoves(move) != null;
+    }
+
+    public Move findMatchInValidMoves(Move move) {
+        List<Move> matches = this.moves.stream().filter(m -> m.equals(move)).toList();
+        return matches.size() == 0 ? null : matches.get(0);
     }
 }

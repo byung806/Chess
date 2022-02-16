@@ -10,7 +10,7 @@ public abstract class Chess {
     private static final int[][] ROOK_MOVES = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
     private static final int[][] BISHOP_MOVES = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
     private static final int[][] QUEEN_MOVES = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
-    private static final int[][] KING_MOVES = {{1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}, {-1, 1}, {0, 1}, {2, 0}, {-2, 0}};
+    private static final int[][] KING_MOVES = {{1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}, {-1, 1}, {0, 1}};
     private static final int[][] KNIGHT_MOVES = {{1, 2}, {2, 1}, {2, -1}, {1, -2}, {-1, -2}, {-2, -1}, {-2, 1}, {-1, 2}};
     private static final int[][] WHITE_PAWN_MOVES = {{1, -1}, {-1, -1}, {0, -1}, {0, -2}};
     private static final int[][] BLACK_PAWN_MOVES = {{1, 1}, {-1, 1}, {0, 1}, {0, 2}};
@@ -102,6 +102,7 @@ public abstract class Chess {
         Piece[] arrangement = board.getArrangement();
         int posX = piece.getCol();
         int posY = piece.getRow();
+        int sqId = piece.getSquareId();
         int size = board.getSize();
         int pieceColor = piece.color();
         int start = piece.getSquareId();
@@ -114,8 +115,36 @@ public abstract class Chess {
         } else if (piece.isQueen()) {
             directions = QUEEN_MOVES;
         } else if (piece.isKing()) {
-            // todo: castling
             directions = KING_MOVES;
+            if (board.WhiteKingSideCastle() || board.BlackKingSideCastle()) {
+                //king bishop knight rook
+                for (int x = posX; x < size; x++) {
+                    Piece pieceInWay = arrangement[posY * size + x];
+                    if ((squareIsAttacked(posY * size + x, piece.color(), arrangement) || pieceInWay != null)
+                            && pieceInWay != piece) {
+                        Piece p = arrangement[posY * size + x];
+                        if (p != null && p.pieceType() == (piece.color() | Piece.Rook) && x - posX > 2) {
+                            int rookPos = posY * size + x;
+                            moves.add(new Move(board, sqId, sqId + 2, rookPos, Board.KING_SIDE_CASTLE));
+                        }
+                        break;
+                    }
+                }
+            }
+            if (board.WhiteQueenSideCastle() || board.BlackQueenSideCastle()) {
+                for (int x = posX; x >= 0; x--) {
+                    Piece pieceInWay = arrangement[posY * size + x];
+                    if ((squareIsAttacked(posY * size + x, piece.color(), arrangement) || pieceInWay != null)
+                            && pieceInWay != piece) {
+                        Piece p = arrangement[posY * size + x];
+                        if (p != null && p.pieceType() == (piece.color() | Piece.Rook) && posX - x > 2) {
+                            int rookPos = posY * size + x;
+                            moves.add(new Move(board, sqId, sqId - 2, rookPos, Board.QUEEN_SIDE_CASTLE));
+                        }
+                        break;
+                    }
+                }
+            }
         } else if (piece.isKnight()) {
             directions = KNIGHT_MOVES;
         } else if (piece.isPawn()) {
@@ -199,9 +228,9 @@ public abstract class Chess {
         }
         int[][] pawnAttacks;
         if (originSquarePieceColor == Piece.White) {
-            pawnAttacks = new int[][]{{1,-1}, {-1,-1}};
+            pawnAttacks = new int[][]{{1, -1}, {-1, -1}};
         } else {
-            pawnAttacks = new int[][]{{1,1}, {-1,1}};
+            pawnAttacks = new int[][]{{1, 1}, {-1, 1}};
         }
         for (int[] dir : KNIGHT_MOVES) {
             int x = originX + dir[0];
