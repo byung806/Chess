@@ -16,7 +16,6 @@ public class Board extends Chess {
     public static int QUEEN_SIDE_CASTLE = 1;
 
     private final Piece[] arrangement;
-    private final ArrayList<Piece> kings = new ArrayList<>();
     private final int size;
     private Piece draggedPiece;
     private Piece selectedPiece;
@@ -61,11 +60,6 @@ public class Board extends Chess {
         this.halfMoveClock = Integer.parseInt(fen.split(" ")[4]);
         this.numMoves = Integer.parseInt(fen.split(" ")[5]);
         this.arrangement = Chess.loadFenPosition(fen, this);
-        for (Piece piece : arrangement) {
-            if (piece != null && piece.isKing()) {
-                this.kings.add(piece);
-            }
-        }
 
         this.fen = fen;
         this.moves = generateAllMoves(this);
@@ -181,10 +175,6 @@ public class Board extends Chess {
         return colorToMove;
     }
 
-    public void setColorToMove(int colorToMove) {
-        this.colorToMove = colorToMove;
-    }
-
     public int getHalfMoveClock() {
         return halfMoveClock;
     }
@@ -254,10 +244,6 @@ public class Board extends Chess {
     public void setSelectedPiece(Piece piece) {
         this.selectedPiece = piece;
         dirty = true;
-    }
-
-    public ArrayList<Piece> getKings() {
-        return this.kings;
     }
 
     public String toString() {

@@ -50,11 +50,12 @@ public class ClickListener extends MouseAdapter {
                     panel.repaint();
                     return;
                 } else {
+                    // non valid move
                     if (start == squareId && !board.containsHighlightedSquare(squareId, Board.SELECTED_COLOR)) {
                         board.addHighlightedSquare(squareId, Board.SELECTED_COLOR);
                     } else {
                         board.removeHighlightedSquare(start);
-                        if (start != squareId) {
+                        if (start != squareId && piece != null) {
                             board.addHighlightedSquare(squareId, Board.SELECTED_COLOR);
                         } else {
                             board.setSelectedPiece(null);
