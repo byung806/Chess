@@ -3,7 +3,7 @@ package listener;
 import chess.Board;
 import chess.Move;
 import chess.pieces.Piece;
-import renderer.BoardPanel;
+import renderer.ChessboardPanel;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -12,7 +12,7 @@ public class ClickListener extends MouseAdapter {
     boolean dragging;
     int mouseClicks;
     Board board;
-    BoardPanel panel;
+    ChessboardPanel panel;
 
     public ClickListener(Board board) {
         dragging = false;
@@ -20,7 +20,7 @@ public class ClickListener extends MouseAdapter {
         this.board = board;
     }
 
-    public void setPanel(BoardPanel panel) {
+    public void setPanel(ChessboardPanel panel) {
         this.panel = panel;
     }
 

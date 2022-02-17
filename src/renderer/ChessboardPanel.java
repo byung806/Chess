@@ -10,12 +10,12 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class BoardPanel extends JPanel {
+public class ChessboardPanel extends JPanel {
     Graphics2D g;
     Board board;
     ClickListener cl;
 
-    public BoardPanel(Board board, int width, int height) {
+    public ChessboardPanel(Board board, int width, int height) {
         this.board = board;
         this.setPreferredSize(new Dimension(width, height));
         this.setMinimumSize(new Dimension(600, 400));
