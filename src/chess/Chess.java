@@ -97,6 +97,7 @@ public abstract class Chess {
     }
 
     private static ArrayList<Move> generateMoves(Piece piece) {
+        // todo: en passant
         ArrayList<Move> moves = new ArrayList<>();
         Board board = piece.getBoard();
         Piece[] arrangement = board.getArrangement();

@@ -94,6 +94,9 @@ public class Board extends Chess {
     }
 
     public void removeHighlightedSquare(int squareId) {
+        if (!highlightedSquares.containsKey(squareId)) {
+            return;
+        }
         ArrayList<Color> hlSquares = highlightedSquares.get(squareId);
         hlSquares.remove(hlSquares.size() - 1);
         dirty = true;
@@ -101,6 +104,10 @@ public class Board extends Chess {
 
     public void clearHighlightedSquares() {
         highlightedSquares = new HashMap<>();
+    }
+
+    public boolean containsHighlightedSquare(int square, Color color) {
+        return highlightedSquares.containsKey(square) && highlightedSquares.get(square).contains(color);
     }
 
     public void executeMove(Move move) {
