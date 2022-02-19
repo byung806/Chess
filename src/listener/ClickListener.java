@@ -31,6 +31,7 @@ public class ClickListener extends MouseAdapter {
 
     @Override
     public void mousePressed(MouseEvent e) {
+        // todo: pre-moves and disable both sides playing
         this.dragging = true;
         int squareId = board.getPieceFromScreenCoords(e.getX(), e.getY());
         Piece piece = squareId != -1 ? board.getArrangement()[squareId] : null;

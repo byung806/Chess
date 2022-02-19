@@ -1,5 +1,6 @@
 package chess;
 
+import audio.Sound;
 import chess.pieces.Piece;
 
 import java.awt.*;
@@ -14,9 +15,9 @@ public class Board extends Chess {
     public static Color RED = new Color(0.982f, 0.102f, 0.105f, 0.8f);
     public static int KING_SIDE_CASTLE = 0;
     public static int QUEEN_SIDE_CASTLE = 1;
-
     private final Piece[] arrangement;
     private final int size;
+    public Sound soundManager;
     private Piece draggedPiece;
     private Piece selectedPiece;
     private int enPassantSquare;
@@ -61,10 +62,49 @@ public class Board extends Chess {
         this.numMoves = Integer.parseInt(fen.split(" ")[5]);
         this.arrangement = Chess.loadFenPosition(fen, this);
 
+        try {
+            soundManager = new Sound();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Could not load some sound assets.");
+        }
+
         this.fen = fen;
         this.moves = generateAllMoves(this);
         this.highlightedSquares = new HashMap<>();
         this.enPassantSquare = -1;
+        this.dirty = true;
+    }
+
+    public void executeMove(Move move) {
+        // doesn't check for valid moves so a valid move should be passed in
+        int start = move.getStartSquare();
+        Piece toMove = arrangement[start];
+        if (toMove.isColor(Piece.Black)) {
+            incrementNumMoves();
+        }
+        if (move.isCastle()) {
+            if (toMove.isColor(Piece.White)) {
+                whiteKingSideCastle = false;
+                whiteQueenSideCastle = false;
+            } else {
+                blackKingSideCastle = false;
+                blackQueenSideCastle = false;
+            }
+            Piece rook = arrangement[move.getRookPos()];
+            rook.setSquareId(move.getTargetSquare() + (move.getCastleType() == KING_SIDE_CASTLE ? -1 : 1));
+            arrangement[move.getRookPos()] = null;
+            arrangement[move.getTargetSquare() + (move.getCastleType() == KING_SIDE_CASTLE ? -1 : 1)] = rook;
+        }
+        arrangement[start] = null;
+        arrangement[move.getTargetSquare()] = toMove;
+        toMove.setSquareId(move.getTargetSquare());
+        this.colorToMove = this.colorToMove == Piece.White ? Piece.Black : Piece.White;
+        this.fen = generateFenPosition(this);
+        this.moves = generateAllMoves(this);
+        if (this.moves.isEmpty()) {
+            System.out.println("Checkmate!");
+        }
         this.dirty = true;
     }
 
@@ -102,38 +142,6 @@ public class Board extends Chess {
 
     public boolean containsHighlightedSquare(int square, Color color) {
         return highlightedSquares.containsKey(square) && highlightedSquares.get(square).contains(color);
-    }
-
-    public void executeMove(Move move) {
-        // doesn't check for valid moves so a valid move should be passed in
-        int start = move.getStartSquare();
-        Piece toMove = arrangement[start];
-        if (toMove.isColor(Piece.Black)) {
-            incrementNumMoves();
-        }
-        if (move.isCastle()) {
-            if (toMove.isColor(Piece.White)) {
-                whiteKingSideCastle = false;
-                whiteQueenSideCastle = false;
-            } else {
-                blackKingSideCastle = false;
-                blackQueenSideCastle = false;
-            }
-            Piece rook = arrangement[move.getRookPos()];
-            rook.setSquareId(move.getTargetSquare() + (move.getCastleType() == KING_SIDE_CASTLE ? -1 : 1));
-            arrangement[move.getRookPos()] = null;
-            arrangement[move.getTargetSquare() + (move.getCastleType() == KING_SIDE_CASTLE ? -1 : 1)] = rook;
-        }
-        arrangement[start] = null;
-        arrangement[move.getTargetSquare()] = toMove;
-        toMove.setSquareId(move.getTargetSquare());
-        this.colorToMove = this.colorToMove == Piece.White ? Piece.Black : Piece.White;
-        this.fen = generateFenPosition(this);
-        this.moves = generateAllMoves(this);
-        if (this.moves.isEmpty()) {
-            System.out.println("Checkmate!");
-        }
-        this.dirty = true;
     }
 
     public boolean isDirty() {
