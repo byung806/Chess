@@ -78,6 +78,7 @@ public class Board extends Chess {
 
     public void executeMove(Move move) {
         // doesn't check for valid moves so a valid move should be passed in
+        // todo: disable castling if rook moves
         int start = move.getStartSquare();
         Piece toMove = arrangement[start];
         if (toMove.isColor(Piece.Black)) {
@@ -103,7 +104,11 @@ public class Board extends Chess {
         this.fen = generateFenPosition(this);
         this.moves = generateAllMoves(this);
         if (this.moves.isEmpty()) {
-            System.out.println("Checkmate!");
+            if (Chess.kingInCheck(this.colorToMove, arrangement)) {
+                System.out.println("Checkmate!");
+            } else {
+                System.out.println("Stalemate!");
+            }
         }
         this.dirty = true;
     }

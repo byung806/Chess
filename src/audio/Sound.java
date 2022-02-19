@@ -23,6 +23,7 @@ public class Sound {
         CASTLE_MOVE = clip;
         clip.open(AudioSystem.getAudioInputStream(new File("assets/sounds/check.wav")));
         CHECK_MOVE = clip;
+        clip.close();
     }
 
     public void play(Clip clip) {

@@ -2,6 +2,7 @@ package chess;
 
 import chess.pieces.*;
 
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -117,43 +118,32 @@ public abstract class Chess {
             directions = QUEEN_MOVES;
         } else if (piece.isKing()) {
             directions = KING_MOVES;
-            if (board.WhiteKingSideCastle() || board.BlackKingSideCastle()) {
-                //king bishop knight rook
-                for (int x = posX; x < size; x++) {
+            // castling
+            ArrayList<Integer> castleDirections = new ArrayList<>();
+            if (board.WhiteKingSideCastle() || board.BlackKingSideCastle()) castleDirections.add(1);
+            if (board.WhiteQueenSideCastle() || board.BlackQueenSideCastle()) castleDirections.add(-1);
+            for (int dir : castleDirections) {
+                for (int x = posX; x < size; x += dir) {
                     Piece pieceInWay = arrangement[posY * size + x];
-                    if ((squareIsAttacked(posY * size + x, piece.color(), arrangement) || pieceInWay != null)
-                            && pieceInWay != piece) {
-                        Piece p = arrangement[posY * size + x];
-                        if (p != null && p.pieceType() == (piece.color() | Piece.Rook) && x - posX > 2) {
-                            int rookPos = posY * size + x;
-                            moves.add(new Move(board, sqId, sqId + 2, rookPos, Board.KING_SIDE_CASTLE));
+                    boolean squareAttacked = squareIsAttacked(posY * size + x, piece.color(), arrangement);
+                    if ((squareAttacked || pieceInWay != null)) {
+                        if (pieceInWay != piece) {
+                            Piece p = arrangement[posY * size + x];
+                            if (p != null && p.pieceType() == (piece.color() | Piece.Rook) && Math.abs(x - posX) > 2) {
+                                int rookPos = posY * size + x;
+                                moves.add(new Move(board, sqId, sqId + dir*2, rookPos, dir == 1 ? Board.KING_SIDE_CASTLE : Board.QUEEN_SIDE_CASTLE));
+                            }
+                            break;
+                        } else if (squareAttacked) {
+                            break;
                         }
-                        break;
-                    }
-                }
-            }
-            if (board.WhiteQueenSideCastle() || board.BlackQueenSideCastle()) {
-                for (int x = posX; x >= 0; x--) {
-                    Piece pieceInWay = arrangement[posY * size + x];
-                    if ((squareIsAttacked(posY * size + x, piece.color(), arrangement) || pieceInWay != null)
-                            && pieceInWay != piece) {
-                        Piece p = arrangement[posY * size + x];
-                        if (p != null && p.pieceType() == (piece.color() | Piece.Rook) && posX - x > 2) {
-                            int rookPos = posY * size + x;
-                            moves.add(new Move(board, sqId, sqId - 2, rookPos, Board.QUEEN_SIDE_CASTLE));
-                        }
-                        break;
                     }
                 }
             }
         } else if (piece.isKnight()) {
             directions = KNIGHT_MOVES;
         } else if (piece.isPawn()) {
-            if (pieceColor == Piece.White) {
-                directions = WHITE_PAWN_MOVES;
-            } else {
-                directions = BLACK_PAWN_MOVES;
-            }
+            directions = pieceColor == Piece.White ? WHITE_PAWN_MOVES : BLACK_PAWN_MOVES;
         }
 
         directionLoop:
@@ -249,6 +239,18 @@ public abstract class Chess {
             if (x >= 0 && x < size && y >= 0 && y < size) {
                 Piece inWay = arrangement[y * size + x];
                 if (inWay != null && inWay.isPawn() && !inWay.isColor(originSquarePieceColor)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static boolean kingInCheck(int color, Piece[] arrangement) {
+        for (int sq = 0; sq < arrangement.length; sq++) {
+            Piece king = arrangement[sq];
+            if (king != null && king.isKing() && king.isColor(color)) {
+                if (squareIsAttacked(sq, color, arrangement)) {
                     return true;
                 }
             }
