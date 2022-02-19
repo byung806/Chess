@@ -9,13 +9,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class ClickListener extends MouseAdapter {
-    boolean dragging;
     int mouseClicks;
     Board board;
     ChessboardPanel panel;
 
     public ClickListener(Board board) {
-        dragging = false;
         mouseClicks = 0;
         this.board = board;
     }
@@ -32,7 +30,6 @@ public class ClickListener extends MouseAdapter {
     @Override
     public void mousePressed(MouseEvent e) {
         // todo: pre-moves and disable both sides playing
-        this.dragging = true;
         int squareId = board.getPieceFromScreenCoords(e.getX(), e.getY());
         Piece piece = squareId != -1 ? board.getArrangement()[squareId] : null;
         if (e.getButton() == 3) {
@@ -77,7 +74,6 @@ public class ClickListener extends MouseAdapter {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        this.dragging = false;
         int squareId = board.getPieceFromScreenCoords(e.getX(), e.getY());
         Piece draggedPiece = board.getDraggedPiece();
         if (draggedPiece != null) {
