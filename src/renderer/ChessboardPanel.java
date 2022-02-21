@@ -11,34 +11,32 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ChessboardPanel extends JPanel {
-    Graphics2D g;
-    Board board;
-    ClickListener cl;
+    private Board board;
 
     public ChessboardPanel(Board board, int width, int height) {
         this.board = board;
         this.setPreferredSize(new Dimension(width, height));
         this.setMinimumSize(new Dimension(600, 400));
-        this.cl = new ClickListener(board);
+        ClickListener cl = new ClickListener(board);
         this.addMouseListener(cl);
         cl.setPanel(this);
     }
 
     @Override
-    public void paintComponent(Graphics g) {
+    public void paintComponent(Graphics gr) {
         // main update loop
         board.setScreenX(getWidth() / 2);
         board.setScreenY(getHeight() / 2);
         board.setScreenLength(Math.round(((float) Math.min(getWidth(), getHeight()) * 13 / 16) / board.getSize()) * board.getSize());
-        this.g = (Graphics2D) g;
+        Graphics2D g = (Graphics2D) gr;
         Point mousePos = getMousePosition();
         Piece piece = board.getDraggedPiece();
         if (board.isDirty() || (board.getDraggedPiece() != null && mousePos != null)) {
             // draw board
-            drawBaseBoard(board);
-            drawRankFileLabels(board);
-            drawHighlightedSquares(board);
-            drawPieces(board);
+            drawBaseBoard(g, board);
+            drawRankFileLabels(g, board);
+            drawHighlightedSquares(g, board);
+            drawPieces(g, board);
             board.setClean();
         }
         if (board.getDraggedPiece() != null && mousePos != null) {
@@ -51,7 +49,7 @@ public class ChessboardPanel extends JPanel {
         }
     }
 
-    public void drawBaseBoard(Board board) {
+    public void drawBaseBoard(Graphics2D g, Board board) {
         g.setBackground(new Color(0.125f, 0.122f, 0.125f, 1.0f));
         g.clearRect(0, 0, getWidth(), getHeight());
 
@@ -78,7 +76,7 @@ public class ChessboardPanel extends JPanel {
         }
     }
 
-    public void drawRankFileLabels(Board board) {
+    public void drawRankFileLabels(Graphics2D g, Board board) {
         int boardSideLength = board.getScreenLength();
         int size = board.getSize();
         int fontSize = 1;
@@ -109,7 +107,7 @@ public class ChessboardPanel extends JPanel {
         }
     }
 
-    public void drawHighlightedSquares(Board board) {
+    public void drawHighlightedSquares(Graphics2D g, Board board) {
         HashMap<Integer, ArrayList<Color>> highlighted = board.getHighlightedSquares();
         for (int squareId : highlighted.keySet()) {
             int size = board.getSize();
@@ -125,7 +123,7 @@ public class ChessboardPanel extends JPanel {
         }
     }
 
-    public void drawPieces(Board board) {
+    public void drawPieces(Graphics2D g, Board board) {
         int boardSideLength = board.getScreenLength();
         int size = board.getSize();
         int imageLength = boardSideLength / size;
@@ -137,5 +135,9 @@ public class ChessboardPanel extends JPanel {
                 g.drawImage(piece.getImage(), x, y, imageLength, imageLength, null);
             }
         }
+    }
+
+    public void reset() {
+        Board board = new Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     }
 }

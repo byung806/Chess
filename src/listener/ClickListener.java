@@ -98,4 +98,8 @@ public class ClickListener extends MouseAdapter {
     @Override
     public void mouseExited(MouseEvent e) {
     }
+
+    public int getMouseClicks() {
+        return mouseClicks;
+    }
 }

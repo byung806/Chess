@@ -1,11 +1,18 @@
 package chess;
 
+import chess.pieces.Bishop;
+import chess.pieces.King;
+import chess.pieces.Knight;
+import chess.pieces.Pawn;
+import chess.pieces.Queen;
+import chess.pieces.Rook;
 import chess.pieces.*;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static chess.pieces.Piece.*;
 
 public abstract class Chess {
     private static final int[][] ROOK_MOVES = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
@@ -109,15 +116,17 @@ public abstract class Chess {
         int pieceColor = piece.color();
         int start = piece.getSquareId();
 
-        int[][] directions = {};
-        if (piece.isRook()) {
-            directions = ROOK_MOVES;
-        } else if (piece.isBishop()) {
-            directions = BISHOP_MOVES;
-        } else if (piece.isQueen()) {
-            directions = QUEEN_MOVES;
-        } else if (piece.isKing()) {
-            directions = KING_MOVES;
+        int[][] directions = switch (piece.pieceType() & typeMask) {
+            case Rook -> ROOK_MOVES;
+            case Bishop -> BISHOP_MOVES;
+            case Queen -> QUEEN_MOVES;
+            case King -> KING_MOVES;
+            case Knight -> KNIGHT_MOVES;
+            case Pawn -> pieceColor == White ? WHITE_PAWN_MOVES : BLACK_PAWN_MOVES;
+            default -> new int[][]{};
+        };
+
+        if (piece.isKing()) {
             // castling
             ArrayList<Integer> castleDirections = new ArrayList<>();
             if (board.WhiteKingSideCastle() || board.BlackKingSideCastle()) castleDirections.add(1);
@@ -131,7 +140,7 @@ public abstract class Chess {
                             Piece p = arrangement[posY * size + x];
                             if (p != null && p.pieceType() == (piece.color() | Piece.Rook) && Math.abs(x - posX) > 2) {
                                 int rookPos = posY * size + x;
-                                moves.add(new Move(board, sqId, sqId + dir*2, rookPos, dir == 1 ? Board.KING_SIDE_CASTLE : Board.QUEEN_SIDE_CASTLE));
+                                moves.add(new Move(board, sqId, sqId + dir * 2, rookPos, dir == 1 ? Board.KING_SIDE_CASTLE : Board.QUEEN_SIDE_CASTLE));
                             }
                             break;
                         } else if (squareAttacked) {
@@ -140,10 +149,6 @@ public abstract class Chess {
                     }
                 }
             }
-        } else if (piece.isKnight()) {
-            directions = KNIGHT_MOVES;
-        } else if (piece.isPawn()) {
-            directions = pieceColor == Piece.White ? WHITE_PAWN_MOVES : BLACK_PAWN_MOVES;
         }
 
         directionLoop:
