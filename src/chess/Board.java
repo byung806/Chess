@@ -17,7 +17,8 @@ public class Board extends Chess {
     public static int QUEEN_SIDE_CASTLE = 1;
     private final Piece[] arrangement;
     private final int size;
-    public Sound soundManager;
+    private int playAs;
+    private Sound soundManager;
     private Piece draggedPiece;
     private Piece selectedPiece;
     private int enPassantSquare;
@@ -37,27 +38,21 @@ public class Board extends Chess {
     private int screenX;
     private int screenY;
 
-    public Board(String fen) {
+    public Board(String fen, int playAs) {
         // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+        String[] splitFen = fen.split(" ");
+        colorToMove = splitFen[1].equals("w") ? 8 : 16;
+
         int size = 0;
-        colorToMove = fen.split(" ")[1].equals("w") ? 8 : 16;
-        for (char c : fen.split(" ")[0].split("/")[0].toCharArray()) {
+        for (char c : splitFen[0].split("/")[0].toCharArray()) {
             size += Character.isDigit(c) ? Character.getNumericValue(c) : 1;
         }
         this.size = size;
         String castleAvailability = fen.split(" ")[2];
-        if (castleAvailability.contains("K")) {
-            whiteKingSideCastle = true;
-        }
-        if (castleAvailability.contains("Q")) {
-            whiteQueenSideCastle = true;
-        }
-        if (castleAvailability.contains("k")) {
-            blackKingSideCastle = true;
-        }
-        if (castleAvailability.contains("q")) {
-            blackQueenSideCastle = true;
-        }
+        if (castleAvailability.contains("K")) whiteKingSideCastle = true;
+        if (castleAvailability.contains("Q")) whiteQueenSideCastle = true;
+        if (castleAvailability.contains("k")) blackKingSideCastle = true;
+        if (castleAvailability.contains("q")) blackQueenSideCastle = true;
         this.halfMoveClock = Integer.parseInt(fen.split(" ")[4]);
         this.numMoves = Integer.parseInt(fen.split(" ")[5]);
         this.arrangement = Chess.loadFenPosition(fen, this);
@@ -69,6 +64,7 @@ public class Board extends Chess {
             System.out.println("Could not load some sound assets.");
         }
 
+        this.playAs = playAs;
         this.fen = fen;
         this.moves = generateAllMoves(this);
         this.highlightedSquares = new HashMap<>();
@@ -81,11 +77,9 @@ public class Board extends Chess {
         // todo: disable castling if rook moves
         int start = move.getStartSquare();
         Piece toMove = arrangement[start];
-        if (toMove.isColor(Piece.Black)) {
-            incrementNumMoves();
-        }
+        if (toMove.isColor(Piece.BLACK)) incrementNumMoves();
         if (move.isCastle()) {
-            if (toMove.isColor(Piece.White)) {
+            if (toMove.isColor(Piece.WHITE)) {
                 whiteKingSideCastle = false;
                 whiteQueenSideCastle = false;
             } else {
@@ -100,7 +94,7 @@ public class Board extends Chess {
         arrangement[start] = null;
         arrangement[move.getTargetSquare()] = toMove;
         toMove.setSquareId(move.getTargetSquare());
-        this.colorToMove = this.colorToMove == Piece.White ? Piece.Black : Piece.White;
+        this.colorToMove = this.colorToMove == Piece.WHITE ? Piece.BLACK : Piece.WHITE;
         this.fen = generateFenPosition(this);
         this.moves = generateAllMoves(this);
         if (this.moves.isEmpty()) {
@@ -119,7 +113,7 @@ public class Board extends Chess {
         if (xCol < 0 || xCol >= size || yCol < 0 || yCol >= size) {
             return -1;
         }
-        return yCol * size + xCol;
+        return this.playAs == Piece.WHITE ? yCol * size + xCol : size * size - (yCol * size + xCol) - 1;
     }
 
     public void addHighlightedSquare(int squareId, Color color) {
@@ -257,6 +251,10 @@ public class Board extends Chess {
     public void setSelectedPiece(Piece piece) {
         this.selectedPiece = piece;
         dirty = true;
+    }
+
+    public int getPlayAs() {
+        return this.playAs;
     }
 
     public String toString() {

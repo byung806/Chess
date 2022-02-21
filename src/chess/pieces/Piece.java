@@ -7,32 +7,32 @@ import java.awt.*;
 import java.util.HashMap;
 
 public abstract class Piece {
-    public static final int King = 0b001;   // 1
-    public static final int Pawn = 0b010;   // 2
-    public static final int Knight = 0b011; // 3
-    public static final int Bishop = 0b101; // 5
-    public static final int Rook = 0b110;   // 6
-    public static final int Queen = 0b111;  // 7
+    public static final int KING = 0b001;   // 1
+    public static final int PAWN = 0b010;   // 2
+    public static final int KNIGHT = 0b011; // 3
+    public static final int BISHOP = 0b101; // 5
+    public static final int ROOK = 0b110;   // 6
+    public static final int QUEEN = 0b111;  // 7
 
-    public static final int White = 0b01000; // 8
-    public static final int Black = 0b10000; // 16
-    public static final int typeMask = 0b00111;
-    public static final int colorMask = 0b11000;
+    public static final int WHITE = 0b01000; // 8
+    public static final int BLACK = 0b10000; // 16
+    public static final int TYPE_MASK = 0b00111;
+    public static final int COLOR_MASK = 0b11000;
 
     // Each piece can be represented by CCTTT in binary where CC represents the color and TTT represents the piece type
 
-    protected static final Image WhitePawnImage = new ImageIcon("assets/textures/white_pawn.png").getImage();
-    protected static final Image WhiteKingImage = new ImageIcon("assets/textures/white_king.png").getImage();
-    protected static final Image WhiteKnightImage = new ImageIcon("assets/textures/white_knight.png").getImage();
-    protected static final Image WhiteBishopImage = new ImageIcon("assets/textures/white_bishop.png").getImage();
-    protected static final Image WhiteRookImage = new ImageIcon("assets/textures/white_rook.png").getImage();
-    protected static final Image WhiteQueenImage = new ImageIcon("assets/textures/white_queen.png").getImage();
-    protected static final Image BlackPawnImage = new ImageIcon("assets/textures/black_pawn.png").getImage();
-    protected static final Image BlackKingImage = new ImageIcon("assets/textures/black_king.png").getImage();
-    protected static final Image BlackKnightImage = new ImageIcon("assets/textures/black_knight.png").getImage();
-    protected static final Image BlackBishopImage = new ImageIcon("assets/textures/black_bishop.png").getImage();
-    protected static final Image BlackRookImage = new ImageIcon("assets/textures/black_rook.png").getImage();
-    protected static final Image BlackQueenImage = new ImageIcon("assets/textures/black_queen.png").getImage();
+    protected static final Image WHITE_PAWN_IMAGE = new ImageIcon("assets/textures/white_pawn.png").getImage();
+    protected static final Image WHITE_KING_IMAGE = new ImageIcon("assets/textures/white_king.png").getImage();
+    protected static final Image WHITE_KNIGHT_IMAGE = new ImageIcon("assets/textures/white_knight.png").getImage();
+    protected static final Image WHITE_BISHOP_IMAGE = new ImageIcon("assets/textures/white_bishop.png").getImage();
+    protected static final Image WHITE_ROOK_IMAGE = new ImageIcon("assets/textures/white_rook.png").getImage();
+    protected static final Image WHITE_QUEEN_IMAGE = new ImageIcon("assets/textures/white_queen.png").getImage();
+    protected static final Image BLACK_PAWN_IMAGE = new ImageIcon("assets/textures/black_pawn.png").getImage();
+    protected static final Image BLACK_KING_IMAGE = new ImageIcon("assets/textures/black_king.png").getImage();
+    protected static final Image BLACK_KNIGHT_IMAGE = new ImageIcon("assets/textures/black_knight.png").getImage();
+    protected static final Image BLACK_BISHOP_IMAGE = new ImageIcon("assets/textures/black_bishop.png").getImage();
+    protected static final Image BLACK_ROOK_IMAGE = new ImageIcon("assets/textures/black_rook.png").getImage();
+    protected static final Image BLACK_QUEEN_IMAGE = new ImageIcon("assets/textures/black_queen.png").getImage();
 
     protected int pieceType;
     protected Image image;
@@ -67,11 +67,11 @@ public abstract class Piece {
     }
 
     public boolean isColor(int color) {
-        return (this.pieceType & colorMask) == color;
+        return (this.pieceType & COLOR_MASK) == color;
     }
 
     public int color() {
-        return this.pieceType & colorMask;
+        return this.pieceType & COLOR_MASK;
     }
 
     public int pieceType() {
@@ -79,27 +79,27 @@ public abstract class Piece {
     }
 
     public boolean isRook() {
-        return (this.pieceType & typeMask) == Rook;
+        return (this.pieceType & TYPE_MASK) == ROOK;
     }
 
     public boolean isBishop() {
-        return (this.pieceType & typeMask) == Bishop;
+        return (this.pieceType & TYPE_MASK) == BISHOP;
     }
 
     public boolean isQueen() {
-        return (this.pieceType & typeMask) == Queen;
+        return (this.pieceType & TYPE_MASK) == QUEEN;
     }
 
     public boolean isKing() {
-        return (this.pieceType & typeMask) == King;
+        return (this.pieceType & TYPE_MASK) == KING;
     }
 
     public boolean isKnight() {
-        return (this.pieceType & typeMask) == Knight;
+        return (this.pieceType & TYPE_MASK) == KNIGHT;
     }
 
     public boolean isPawn() {
-        return (this.pieceType & typeMask) == Pawn;
+        return (this.pieceType & TYPE_MASK) == PAWN;
     }
 
     public boolean isSlidingPiece() {
@@ -108,18 +108,18 @@ public abstract class Piece {
 
     public String toString() {
         HashMap<Integer, String> asciiChess = new HashMap<>();
-        asciiChess.put(White | King, "K");
-        asciiChess.put(White | Queen, "Q");
-        asciiChess.put(White | Rook, "R");
-        asciiChess.put(White | Bishop, "B");
-        asciiChess.put(White | Knight, "N");
-        asciiChess.put(White | Pawn, "P");
-        asciiChess.put(Black | King, "k");
-        asciiChess.put(Black | Queen, "q");
-        asciiChess.put(Black | Rook, "r");
-        asciiChess.put(Black | Bishop, "b");
-        asciiChess.put(Black | Knight, "n");
-        asciiChess.put(Black | Pawn, "p");
+        asciiChess.put(WHITE | KING, "K");
+        asciiChess.put(WHITE | QUEEN, "Q");
+        asciiChess.put(WHITE | ROOK, "R");
+        asciiChess.put(WHITE | BISHOP, "B");
+        asciiChess.put(WHITE | KNIGHT, "N");
+        asciiChess.put(WHITE | PAWN, "P");
+        asciiChess.put(BLACK | KING, "k");
+        asciiChess.put(BLACK | QUEEN, "q");
+        asciiChess.put(BLACK | ROOK, "r");
+        asciiChess.put(BLACK | BISHOP, "b");
+        asciiChess.put(BLACK | KNIGHT, "n");
+        asciiChess.put(BLACK | PAWN, "p");
         return asciiChess.get(pieceType);
     }
 }

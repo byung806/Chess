@@ -1,11 +1,5 @@
 package chess;
 
-import chess.pieces.Bishop;
-import chess.pieces.King;
-import chess.pieces.Knight;
-import chess.pieces.Pawn;
-import chess.pieces.Queen;
-import chess.pieces.Rook;
 import chess.pieces.*;
 
 import java.util.ArrayList;
@@ -80,7 +74,7 @@ public abstract class Chess {
                 fen.append("/");
             }
         }
-        fen.append(board.getColorToMove() == Piece.White ? " w " : " b ");
+        fen.append(board.getColorToMove() == Piece.WHITE ? " w " : " b ");
         fen.append(board.WhiteKingSideCastle() ? "K" : "").append(board.WhiteQueenSideCastle() ? "Q" : "");
         fen.append(board.BlackKingSideCastle() ? "k" : "").append(board.BlackQueenSideCastle() ? "q " : " ");
         fen.append(board.getEnPassantSquare() != -1 ? squareToAlgebraicNotation(board.getEnPassantSquare(), board.getSize()) : "-");
@@ -116,13 +110,13 @@ public abstract class Chess {
         int pieceColor = piece.color();
         int start = piece.getSquareId();
 
-        int[][] directions = switch (piece.pieceType() & typeMask) {
-            case Rook -> ROOK_MOVES;
-            case Bishop -> BISHOP_MOVES;
-            case Queen -> QUEEN_MOVES;
-            case King -> KING_MOVES;
-            case Knight -> KNIGHT_MOVES;
-            case Pawn -> pieceColor == White ? WHITE_PAWN_MOVES : BLACK_PAWN_MOVES;
+        int[][] directions = switch (piece.pieceType() & TYPE_MASK) {
+            case ROOK -> ROOK_MOVES;
+            case BISHOP -> BISHOP_MOVES;
+            case QUEEN -> QUEEN_MOVES;
+            case KING -> KING_MOVES;
+            case KNIGHT -> KNIGHT_MOVES;
+            case PAWN -> pieceColor == WHITE ? WHITE_PAWN_MOVES : BLACK_PAWN_MOVES;
             default -> new int[][]{};
         };
 
@@ -138,7 +132,7 @@ public abstract class Chess {
                     if ((squareAttacked || pieceInWay != null)) {
                         if (pieceInWay != piece) {
                             Piece p = arrangement[posY * size + x];
-                            if (p != null && p.pieceType() == (piece.color() | Piece.Rook) && Math.abs(x - posX) > 2) {
+                            if (p != null && p.pieceType() == (piece.color() | Piece.ROOK) && Math.abs(x - posX) > 2) {
                                 int rookPos = posY * size + x;
                                 moves.add(new Move(board, sqId, sqId + dir * 2, rookPos, dir == 1 ? Board.KING_SIDE_CASTLE : Board.QUEEN_SIDE_CASTLE));
                             }
@@ -223,7 +217,7 @@ public abstract class Chess {
             }
         }
         int[][] pawnAttacks;
-        if (originSquarePieceColor == Piece.White) {
+        if (originSquarePieceColor == Piece.WHITE) {
             pawnAttacks = new int[][]{{1, -1}, {-1, -1}};
         } else {
             pawnAttacks = new int[][]{{1, 1}, {-1, 1}};
