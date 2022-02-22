@@ -72,6 +72,14 @@ public class Board extends Chess {
         this.dirty = true;
     }
 
+    public Board(Board board) {
+        this.arrangement = board.arrangement; // todo: implement deep instaed of shallow
+        this.size = board.size;
+        this.playAs = board.playAs;
+        this.soundManager = board.soundManager;
+        this.draggedPiece = board.draggedPiece;
+    }
+
     public void executeMove(Move move) {
         // doesn't check for valid moves so a valid move should be passed in
         // todo: disable castling if rook moves

@@ -82,7 +82,7 @@ public class ChessboardPanel extends JPanel {
         int playAs = board.getPlayAs();
         int fontSize = 1;
         while (g.getFontMetrics(new Font("Trebuchet MS", Font.BOLD, fontSize)).getHeight() < boardSideLength / (size * 4)) {
-            fontSize++;
+            fontSize++;  // finding font to match board size
         }
         Font font = new Font("Trebuchet MS", Font.BOLD, fontSize);
         g.setFont(font);

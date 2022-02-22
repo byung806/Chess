@@ -3,10 +3,10 @@ package chess.pieces;
 import chess.Board;
 
 public class Pawn extends Piece {
-    public Pawn(boolean isWhite, Board board, int row, int col) {
-        this.pieceType = isWhite ? (Piece.PAWN | Piece.WHITE) : (Piece.PAWN | Piece.BLACK);
+    public Pawn(int color, Board board, int row, int col) {
+        this.pieceType = color == WHITE ? (WHITE | PAWN) : (BLACK | PAWN);
         this.board = board;
-        this.image = isWhite ? WHITE_PAWN_IMAGE : BLACK_PAWN_IMAGE;
+        this.image = color == WHITE ? WHITE_PAWN_IMAGE : BLACK_PAWN_IMAGE;
         this.row = row;
         this.col = col;
         this.squareId = col + row * board.getSize();

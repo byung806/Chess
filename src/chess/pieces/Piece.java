@@ -106,6 +106,13 @@ public abstract class Piece {
         return (this.pieceType & 0b100) == 0b100;
     }
 
+//    public Piece clone() {
+//        switch (this.pieceType & TYPE_MASK) {
+//            case KING -> {return new King(this.pieceType & COLOR_MASK, this.board, this.row, this.col);}
+//
+//        }
+//    }
+
     public String toString() {
         HashMap<Integer, String> asciiChess = new HashMap<>();
         asciiChess.put(WHITE | KING, "K");

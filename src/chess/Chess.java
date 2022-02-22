@@ -29,20 +29,20 @@ public abstract class Chess {
                         counter += 1;
                     }
                 } else {
-                    boolean isWhite = !Character.toString(piece).equals(Character.toString(piece).toLowerCase());
+                    int color = !Character.toString(piece).equals(Character.toString(piece).toLowerCase()) ? WHITE : BLACK;
                     piece = Character.toString(piece).toLowerCase().charAt(0);
                     if (piece == 'k') {
-                        board[counter] = new King(isWhite, cboard, counter / size, counter % size);
+                        board[counter] = new King(color, cboard, counter / size, counter % size);
                     } else if (piece == 'p') {
-                        board[counter] = new Pawn(isWhite, cboard, counter / size, counter % size);
+                        board[counter] = new Pawn(color, cboard, counter / size, counter % size);
                     } else if (piece == 'n') {
-                        board[counter] = new Knight(isWhite, cboard, counter / size, counter % size);
+                        board[counter] = new Knight(color, cboard, counter / size, counter % size);
                     } else if (piece == 'b') {
-                        board[counter] = new Bishop(isWhite, cboard, counter / size, counter % size);
+                        board[counter] = new Bishop(color, cboard, counter / size, counter % size);
                     } else if (piece == 'r') {
-                        board[counter] = new Rook(isWhite, cboard, counter / size, counter % size);
+                        board[counter] = new Rook(color, cboard, counter / size, counter % size);
                     } else if (piece == 'q') {
-                        board[counter] = new Queen(isWhite, cboard, counter / size, counter % size);
+                        board[counter] = new Queen(color, cboard, counter / size, counter % size);
                     } else {
                         System.out.println("Something went wrong when loading fen string '" + fen + "' with " + piece);
                     }
