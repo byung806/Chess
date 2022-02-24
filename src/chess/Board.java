@@ -8,16 +8,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class Board extends Chess {
+public class Board {
     public static Color MOVED_COLOR = new Color(0.188f, 0.670f, 0.556f, 0.8f);
     public static Color SELECTED_COLOR = new Color(0.396f, 0.886f, 0.772f, 0.8f);
     public static Color VALID_MOVES_COLOR = new Color(0.501f, 0.501f, 0.501f, 0.2f);
     public static Color RED = new Color(0.982f, 0.102f, 0.105f, 0.8f);
     public static int KING_SIDE_CASTLE = 0;
     public static int QUEEN_SIDE_CASTLE = 1;
+    public static int PLAYER_VS_PLAYER = 0;
+    public static int PLAYER_VS_COMPUTER = 1;
     private final Piece[] arrangement;
     private final int size;
-    private int playAs;
+    private final int playAs;
+    private final int mode;
     private Sound soundManager;
     private Piece draggedPiece;
     private Piece selectedPiece;
@@ -38,7 +41,7 @@ public class Board extends Chess {
     private int screenX;
     private int screenY;
 
-    public Board(String fen, int playAs) {
+    public Board(String fen, int playAs, int mode) {
         // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
         String[] splitFen = fen.split(" ");
         colorToMove = splitFen[1].equals("w") ? 8 : 16;
@@ -65,22 +68,23 @@ public class Board extends Chess {
         }
 
         this.playAs = playAs;
+        this.mode = mode;
         this.fen = fen;
-        this.moves = generateAllMoves(this);
+        this.moves = Chess.generateAllMoves(this);
         this.highlightedSquares = new HashMap<>();
         this.enPassantSquare = -1;
         this.dirty = true;
     }
 
-    public Board(Board board) {
-        this.arrangement = board.arrangement; // todo: implement deep instaed of shallow
-        this.size = board.size;
-        this.playAs = board.playAs;
-        this.soundManager = board.soundManager;
-        this.draggedPiece = board.draggedPiece;
-    }
+//    public Board(Board board) {
+//        this.arrangement = board.arrangement; // todo: implement deep instaed of shallow
+//        this.size = board.size;
+//        this.playAs = board.playAs;
+//        this.soundManager = board.soundManager;
+//        this.draggedPiece = board.draggedPiece;
+//    }
 
-    public void executeMove(Move move) {
+    public void makeMove(Move move) {
         // doesn't check for valid moves so a valid move should be passed in
         // todo: disable castling if rook moves
         int start = move.getStartSquare();
@@ -103,8 +107,8 @@ public class Board extends Chess {
         arrangement[move.getTargetSquare()] = toMove;
         toMove.setSquareId(move.getTargetSquare());
         this.colorToMove = this.colorToMove == Piece.WHITE ? Piece.BLACK : Piece.WHITE;
-        this.fen = generateFenPosition(this);
-        this.moves = generateAllMoves(this);
+        this.fen = Chess.generateFenPosition(this);
+        this.moves = Chess.generateAllMoves(this);
         if (this.moves.isEmpty()) {
             if (Chess.kingInCheck(this.colorToMove, arrangement)) {
                 System.out.println("Checkmate!");
@@ -283,6 +287,14 @@ public class Board extends Chess {
 
     public boolean BlackQueenSideCastle() {
         return blackQueenSideCastle;
+    }
+
+    public ArrayList<Move> getMoves() {
+        return this.moves;
+    }
+
+    public int getMode() {
+        return this.mode;
     }
 
     public boolean isCurrentValidMove(Move move) {

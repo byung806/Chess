@@ -3,12 +3,17 @@ package renderer;
 import chess.Board;
 import chess.Chess;
 import chess.pieces.Piece;
+import engine.AI;
 import listener.ClickListener;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import static chess.Board.PLAYER_VS_COMPUTER;
+import static chess.Board.PLAYER_VS_PLAYER;
+import static chess.pieces.Piece.WHITE;
 
 public class ChessboardPanel extends JPanel {
     private Board board;
@@ -17,7 +22,12 @@ public class ChessboardPanel extends JPanel {
         this.board = board;
         this.setPreferredSize(new Dimension(width, height));
         this.setMinimumSize(new Dimension(600, 400));
-        ClickListener cl = new ClickListener(board);
+        ClickListener cl;
+        if (board.getMode() == PLAYER_VS_PLAYER) {
+            cl = new ClickListener(board);
+        } else {
+            cl = new ClickListener(board, new AI(board));
+        }
         this.addMouseListener(cl);
         cl.setPanel(this);
     }
@@ -98,12 +108,12 @@ public class ChessboardPanel extends JPanel {
             if (x == 0) {  // left side numbers
                 int drawX = board.getScreenX() - boardSideLength / 2 + boardSideLength / size / 12;
                 int drawY = board.getScreenY() + (int) ((y - size / 2f) * (boardSideLength / size)) + boardSideLength / size / 4;
-                g.drawString(String.valueOf(playAs == Piece.WHITE ? size - y : y + 1), drawX, drawY);
+                g.drawString(String.valueOf(playAs == WHITE ? size - y : y + 1), drawX, drawY);
             }
             if (y == size - 1) {  // bottom side letters
                 int drawX = board.getScreenX() + (int) ((x - size / 2f + 1) * (boardSideLength / size)) - boardSideLength / size / 6;
                 int drawY = board.getScreenY() + boardSideLength / 2 - boardSideLength / size / 12;
-                g.drawString(Chess.xToPrintableLetters(playAs == Piece.WHITE ? x + 1 : size - x), drawX, drawY);
+                g.drawString(Chess.xToPrintableLetters(playAs == WHITE ? x + 1 : size - x), drawX, drawY);
             }
         }
     }
@@ -116,8 +126,8 @@ public class ChessboardPanel extends JPanel {
             int boardSideLength = board.getScreenLength();
             int col = squareId % size;
             int row = squareId / size;
-            int x = board.getScreenX() - boardSideLength / 2 + (playAs == Piece.WHITE ? col : size - 1 - col) * boardSideLength / size;
-            int y = board.getScreenY() - boardSideLength / 2 + (playAs == Piece.WHITE ? row : size - 1 - row) * boardSideLength / size;
+            int x = board.getScreenX() - boardSideLength / 2 + (playAs == WHITE ? col : size - 1 - col) * boardSideLength / size;
+            int y = board.getScreenY() - boardSideLength / 2 + (playAs == WHITE ? row : size - 1 - row) * boardSideLength / size;
             for (Color c : highlighted.get(squareId)) {
                 g.setPaint(c);
                 g.fillRect(x - 1, y - 1, boardSideLength / size + 2, boardSideLength / size + 2);
@@ -133,14 +143,14 @@ public class ChessboardPanel extends JPanel {
         Piece draggedPiece = board.getDraggedPiece();
         for (Piece piece : board.getArrangement()) {
             if (piece != null && piece != draggedPiece) {
-                int x = getWidth() / 2 - boardSideLength / 2 + (playAs == Piece.WHITE ? piece.getCol() : size - 1 - piece.getCol()) * boardSideLength / size;
-                int y = getHeight() / 2 - boardSideLength / 2 + (playAs == Piece.WHITE ? piece.getRow() : size - 1 - piece.getRow()) * boardSideLength / size;
+                int x = getWidth() / 2 - boardSideLength / 2 + (playAs == WHITE ? piece.getCol() : size - 1 - piece.getCol()) * boardSideLength / size;
+                int y = getHeight() / 2 - boardSideLength / 2 + (playAs == WHITE ? piece.getRow() : size - 1 - piece.getRow()) * boardSideLength / size;
                 g.drawImage(piece.getImage(), x, y, imageLength, imageLength, null);
             }
         }
     }
 
     public void reset() {
-        Board board = new Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", Piece.WHITE);
+        this.board = new Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", WHITE, PLAYER_VS_COMPUTER);
     }
 }

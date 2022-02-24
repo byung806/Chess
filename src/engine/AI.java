@@ -2,17 +2,32 @@ package engine;
 
 import chess.Board;
 import chess.Move;
-import chess.pieces.Piece;
 
 import java.util.ArrayList;
+import java.util.Random;
 
-public abstract class AI {
-    public static Move getBestMove(ArrayList<Move> moves, Board board, int depth) {
-        for (Move move : moves) {
-            for (int i = 0; i < depth; i++) {
+public class AI {
+    private final Board board;
+    private ArrayList<Move> moves;
 
-            }
+    public AI(Board board) {
+        this.board = board;
+    }
+
+    public void start() {
+        this.moves = board.getMoves();
+    }
+
+    private Move getBestMove(ArrayList<Move> moves, Board board, int depth) {
+        if (moves.isEmpty()) {
+            return null;
         }
-        return moves.get(0); // temporary
+        Random r = new Random();
+        return moves.get(r.nextInt(moves.size()));
+    }
+
+    private int getMoveScore(Move move, Board board) {
+        // depth 1
+        return -1;
     }
 }

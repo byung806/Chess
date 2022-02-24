@@ -3,19 +3,28 @@ package listener;
 import chess.Board;
 import chess.Move;
 import chess.pieces.Piece;
+import engine.AI;
 import renderer.ChessboardPanel;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class ClickListener extends MouseAdapter {
-    int mouseClicks;
-    Board board;
-    ChessboardPanel panel;
+    private final Board board;
+    private final AI ai;
+    private int mouseClicks;
+    private ChessboardPanel panel;
+
+    public ClickListener(Board board, AI ai) {
+        this.mouseClicks = 0;
+        this.board = board;
+        this.ai = ai;
+    }
 
     public ClickListener(Board board) {
-        mouseClicks = 0;
+        this.mouseClicks = 0;
         this.board = board;
+        this.ai = null;
     }
 
     public void setPanel(ChessboardPanel panel) {
@@ -40,12 +49,7 @@ public class ClickListener extends MouseAdapter {
                 Move move = board.findMatchInValidMoves(new Move(board, start, squareId));
                 if (move != null) {
                     // make move by clicking square (without dragging)
-                    board.clearHighlightedSquares();
-                    board.addHighlightedSquare(start, Board.MOVED_COLOR);
-                    board.addHighlightedSquare(squareId, Board.MOVED_COLOR);
-                    board.executeMove(move);
-                    board.setSelectedPiece(null);
-                    panel.repaint();
+                    makeMove(move, board);
                     return;
                 } else {
                     // non valid move
@@ -80,15 +84,10 @@ public class ClickListener extends MouseAdapter {
             int start = draggedPiece.getSquareId();
             Move move = squareId != -1 && squareId != start ? new Move(board, start, squareId) : null;
             if (move != null && board.isCurrentValidMove(move)) {
-                board.clearHighlightedSquares();
-                board.addHighlightedSquare(start, Board.MOVED_COLOR);
-                board.addHighlightedSquare(squareId, Board.MOVED_COLOR);
-                board.executeMove(board.findMatchInValidMoves(move));
-                board.setSelectedPiece(null);
+                makeMove(board.findMatchInValidMoves(move), board);
             }
         }
         board.setDraggedPiece(null);
-        panel.repaint();
     }
 
     @Override
@@ -99,7 +98,15 @@ public class ClickListener extends MouseAdapter {
     public void mouseExited(MouseEvent e) {
     }
 
-    public int getMouseClicks() {
-        return mouseClicks;
+    public void makeMove(Move move, Board board) {
+        //todo: repaint only part of screen
+        int start = move.getStartSquare();
+        int target = move.getTargetSquare();
+        board.clearHighlightedSquares();
+        board.addHighlightedSquare(start, Board.MOVED_COLOR);
+        board.addHighlightedSquare(target, Board.MOVED_COLOR);
+        board.makeMove(move);
+        board.setSelectedPiece(null);
+        panel.repaint();
     }
 }
