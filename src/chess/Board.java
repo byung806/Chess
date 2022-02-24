@@ -15,9 +15,12 @@ public class Board extends Chess {
     public static Color RED = new Color(0.982f, 0.102f, 0.105f, 0.8f);
     public static int KING_SIDE_CASTLE = 0;
     public static int QUEEN_SIDE_CASTLE = 1;
+    public static int PLAYER_VS_PLAYER = 0;
+    public static int PLAYER_VS_COMPUTER = 1;
     private final Piece[] arrangement;
     private final int size;
-    private int playAs;
+    private final int playAs;
+    private final int mode;
     private Sound soundManager;
     private Piece draggedPiece;
     private Piece selectedPiece;
@@ -38,7 +41,7 @@ public class Board extends Chess {
     private int screenX;
     private int screenY;
 
-    public Board(String fen, int playAs) {
+    public Board(String fen, int playAs, int mode) {
         // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
         String[] splitFen = fen.split(" ");
         colorToMove = splitFen[1].equals("w") ? 8 : 16;
@@ -55,7 +58,7 @@ public class Board extends Chess {
         if (castleAvailability.contains("q")) blackQueenSideCastle = true;
         this.halfMoveClock = Integer.parseInt(fen.split(" ")[4]);
         this.numMoves = Integer.parseInt(fen.split(" ")[5]);
-        this.arrangement = Chess.loadFenPosition(fen, this);
+        this.arrangement = loadFenPosition(fen, this);
 
         try {
             soundManager = new Sound();
@@ -65,6 +68,7 @@ public class Board extends Chess {
         }
 
         this.playAs = playAs;
+        this.mode = mode;
         this.fen = fen;
         this.moves = generateAllMoves(this);
         this.highlightedSquares = new HashMap<>();
@@ -72,15 +76,15 @@ public class Board extends Chess {
         this.dirty = true;
     }
 
-    public Board(Board board) {
-        this.arrangement = board.arrangement; // todo: implement deep instaed of shallow
-        this.size = board.size;
-        this.playAs = board.playAs;
-        this.soundManager = board.soundManager;
-        this.draggedPiece = board.draggedPiece;
-    }
+//    public Board(Board board) {
+//        this.arrangement = board.arrangement; // todo: implement deep instaed of shallow
+//        this.size = board.size;
+//        this.playAs = board.playAs;
+//        this.soundManager = board.soundManager;
+//        this.draggedPiece = board.draggedPiece;
+//    }
 
-    public void executeMove(Move move) {
+    public void makeMove(Move move) {
         // doesn't check for valid moves so a valid move should be passed in
         // todo: disable castling if rook moves
         int start = move.getStartSquare();
@@ -106,7 +110,7 @@ public class Board extends Chess {
         this.fen = generateFenPosition(this);
         this.moves = generateAllMoves(this);
         if (this.moves.isEmpty()) {
-            if (Chess.kingInCheck(this.colorToMove, arrangement)) {
+            if (kingInCheck(this.colorToMove, arrangement)) {
                 System.out.println("Checkmate!");
             } else {
                 System.out.println("Stalemate!");
@@ -266,7 +270,7 @@ public class Board extends Chess {
     }
 
     public String toString() {
-        return Chess.getPrintableArrangement(this.arrangement);
+        return getPrintableArrangement(this.arrangement);
     }
 
     public boolean WhiteKingSideCastle() {
@@ -283,6 +287,14 @@ public class Board extends Chess {
 
     public boolean BlackQueenSideCastle() {
         return blackQueenSideCastle;
+    }
+
+    public ArrayList<Move> getMoves() {
+        return this.moves;
+    }
+
+    public int getMode() {
+        return this.mode;
     }
 
     public boolean isCurrentValidMove(Move move) {

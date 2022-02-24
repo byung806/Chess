@@ -98,6 +98,17 @@ public abstract class Chess {
         return letters.toString();
     }
 
+    public static int flipColor(int color) {
+        return switch (color) {
+            case WHITE -> BLACK;
+            case BLACK -> WHITE;
+            default -> -1;
+        };
+    }
+
+//    public static HashMap<Integer, Integer> generateHeatmap(Piece[] arrangement) {
+//    }
+
     private static ArrayList<Move> generateMoves(Piece piece) {
         // todo: en passant
         ArrayList<Move> moves = new ArrayList<>();
