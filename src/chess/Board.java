@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class Board {
+public class Board extends Chess {
     public static Color MOVED_COLOR = new Color(0.188f, 0.670f, 0.556f, 0.8f);
     public static Color SELECTED_COLOR = new Color(0.396f, 0.886f, 0.772f, 0.8f);
     public static Color VALID_MOVES_COLOR = new Color(0.501f, 0.501f, 0.501f, 0.2f);
@@ -70,7 +70,7 @@ public class Board {
         this.playAs = playAs;
         this.mode = mode;
         this.fen = fen;
-        this.moves = Chess.generateAllMoves(this);
+        this.moves = generateAllMoves(this);
         this.highlightedSquares = new HashMap<>();
         this.enPassantSquare = -1;
         this.dirty = true;
@@ -107,8 +107,8 @@ public class Board {
         arrangement[move.getTargetSquare()] = toMove;
         toMove.setSquareId(move.getTargetSquare());
         this.colorToMove = this.colorToMove == Piece.WHITE ? Piece.BLACK : Piece.WHITE;
-        this.fen = Chess.generateFenPosition(this);
-        this.moves = Chess.generateAllMoves(this);
+        this.fen = generateFenPosition(this);
+        this.moves = generateAllMoves(this);
         if (this.moves.isEmpty()) {
             if (kingInCheck(this.colorToMove, arrangement)) {
                 System.out.println("Checkmate!");
