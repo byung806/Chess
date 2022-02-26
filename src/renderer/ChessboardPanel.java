@@ -3,7 +3,6 @@ package renderer;
 import chess.Board;
 import chess.Chess;
 import chess.pieces.Piece;
-import engine.AI;
 import listener.ClickListener;
 
 import javax.swing.*;
@@ -12,7 +11,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import static chess.Board.PLAYER_VS_COMPUTER;
-import static chess.Board.PLAYER_VS_PLAYER;
 import static chess.pieces.Piece.WHITE;
 
 public class ChessboardPanel extends JPanel {
@@ -22,40 +20,37 @@ public class ChessboardPanel extends JPanel {
         this.board = board;
         this.setPreferredSize(new Dimension(width, height));
         this.setMinimumSize(new Dimension(600, 400));
-        ClickListener cl;
-        if (board.getMode() == PLAYER_VS_PLAYER) {
-            cl = new ClickListener(board);
-        } else {
-            cl = new ClickListener(board, new AI(board));
-        }
+        ClickListener cl = new ClickListener(board);
         this.addMouseListener(cl);
         cl.setPanel(this);
     }
 
     @Override
     public void paintComponent(Graphics gr) {
-        // main update loop
+        super.paintComponent(gr);
+        // render function
         board.setScreenX(getWidth() / 2);
         board.setScreenY(getHeight() / 2);
         board.setScreenLength(Math.round(((float) Math.min(getWidth(), getHeight()) * 13 / 16) / board.getSize()) * board.getSize());
         Graphics2D g = (Graphics2D) gr;
         Point mousePos = getMousePosition();
         Piece piece = board.getDraggedPiece();
-        if (board.isDirty() || (board.getDraggedPiece() != null && mousePos != null)) {
-            // draw board
+        if (board.isDirty()) {
+            // draw background, board, and pieces
             drawBaseBoard(g, board);
             drawRankFileLabels(g, board);
             drawHighlightedSquares(g, board);
             drawPieces(g, board);
-            board.setClean();
-        }
-        if (board.getDraggedPiece() != null && mousePos != null) {
-            // draw dragged piece
-            int squareLength = board.getScreenLength() / board.getSize();
-            int x = (int) (mousePos.getX()) - squareLength / 2;
-            int y = (int) (mousePos.getY()) - squareLength / 2;
-            g.drawImage(piece.getImage(), x, y, squareLength, squareLength, null);
-            repaint();
+            if (board.getDraggedPiece() != null && mousePos != null) {
+                // draw dragged piece
+                int squareLength = board.getScreenLength() / board.getSize();
+                int x = (int) (mousePos.getX() - squareLength / 2);
+                int y = (int) (mousePos.getY() - squareLength / 2);
+                g.drawImage(piece.getImage(), x, y, squareLength, squareLength, null);
+                repaint();
+            } else {
+                board.setClean();
+            }
         }
     }
 

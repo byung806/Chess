@@ -9,22 +9,23 @@ import renderer.ChessboardPanel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import static chess.Board.PLAYER_VS_COMPUTER;
+import static chess.Board.SELECTED_COLOR;
+
 public class ClickListener extends MouseAdapter {
     private final Board board;
     private final AI ai;
     private int mouseClicks;
     private ChessboardPanel panel;
 
-    public ClickListener(Board board, AI ai) {
-        this.mouseClicks = 0;
-        this.board = board;
-        this.ai = ai;
-    }
-
     public ClickListener(Board board) {
         this.mouseClicks = 0;
         this.board = board;
-        this.ai = null;
+        if (board.getMode() == PLAYER_VS_COMPUTER) {
+            this.ai = new AI(board);
+        } else {
+            this.ai = null;
+        }
     }
 
     public void setPanel(ChessboardPanel panel) {
@@ -44,34 +45,36 @@ public class ClickListener extends MouseAdapter {
         if (e.getButton() == 3) {
             // todo: add arrows and square highlighting
         } else if (e.getButton() == 1) {
-            if (board.getSelectedPiece() != null) {
-                int start = board.getSelectedPiece().getSquareId();
-                Move move = board.findMatchInValidMoves(new Move(board, start, squareId));
-                if (move != null) {
-                    // make move by clicking square (without dragging)
+            Piece selected = board.getSelectedPiece();
+            if (selected == null) {
+                //no possibility of moving
+                if (piece != null && piece.isColor(board.getColorToMove())) {
+                    // start dragging and select drag square if piece is right color
+                    board.setDraggedPiece(piece);
+                    board.setSelectedPiece(piece);
+                    board.addHighlightedSquare(squareId, Board.SELECTED_COLOR);
+                }
+            } else {
+                Move move = new Move(board, selected.getSquareId(), squareId);
+                if (board.isCurrentValidMove(move)) {
+                    // if click to move is valid
                     makeMove(move, board);
-                    return;
                 } else {
-                    // non valid move
-                    if (start == squareId && !board.containsHighlightedSquare(squareId, Board.SELECTED_COLOR)) {
-                        board.addHighlightedSquare(squareId, Board.SELECTED_COLOR);
-                    } else {
-                        board.removeHighlightedSquare(start);
-                        if (start != squareId && piece != null) {
-                            board.addHighlightedSquare(squareId, Board.SELECTED_COLOR);
-                        } else {
-                            board.setSelectedPiece(null);
-                            board.setDraggedPiece(piece);
-                            panel.repaint();
-                            return;
+                    board.setSelectedPiece(null);
+                    if (piece != null) {
+                        board.removeHighlightedSquare(selected.getSquareId());
+                        if (selected.getSquareId() != squareId) {
+                            // select new piece if another same-color piece is clicked (and deselect old)
+                            board.setSelectedPiece(piece);
+                            board.addHighlightedSquare(squareId, SELECTED_COLOR);
                         }
+                        board.setDraggedPiece(piece);
+                    } else {
+                        // if random non-piece square is clicked
+                        board.removeHighlightedSquare(squareId);
                     }
                 }
-            } else if (piece != null) {
-                board.addHighlightedSquare(squareId, Board.SELECTED_COLOR);
             }
-            board.setSelectedPiece(piece);
-            board.setDraggedPiece(piece);
         }
         panel.repaint();
     }
@@ -107,6 +110,7 @@ public class ClickListener extends MouseAdapter {
         board.addHighlightedSquare(target, Board.MOVED_COLOR);
         board.makeMove(move);
         board.setSelectedPiece(null);
+        board.setDraggedPiece(null);
         panel.repaint();
     }
 }

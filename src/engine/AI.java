@@ -16,12 +16,15 @@ public class AI {
 
     public void start() {
         this.moves = board.getMoves();
+        findMoveThenMove();
+    }
+
+    private void findMoveThenMove() {
+        board.makeMove(getBestMove(moves, board, 1));
     }
 
     private Move getBestMove(ArrayList<Move> moves, Board board, int depth) {
-        if (moves.isEmpty()) {
-            return null;
-        }
+        // assumes list of moves is not empty
         Random r = new Random();
         return moves.get(r.nextInt(moves.size()));
     }
