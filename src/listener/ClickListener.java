@@ -3,7 +3,7 @@ package listener;
 import chess.Board;
 import chess.Move;
 import chess.pieces.Piece;
-import engine.AI;
+import engine.MoveManager;
 import renderer.ChessboardPanel;
 
 import java.awt.event.MouseAdapter;
@@ -14,22 +14,19 @@ import static chess.Board.SELECTED_COLOR;
 
 public class ClickListener extends MouseAdapter {
     private final Board board;
-    private final AI ai;
+    private final MoveManager moveManager;
+    private final ChessboardPanel panel;
     private int mouseClicks;
-    private ChessboardPanel panel;
 
-    public ClickListener(Board board) {
+    public ClickListener(Board board, ChessboardPanel panel) {
         this.mouseClicks = 0;
         this.board = board;
-        if (board.getMode() == PLAYER_VS_COMPUTER) {
-            this.ai = new AI(board);
-        } else {
-            this.ai = null;
-        }
-    }
-
-    public void setPanel(ChessboardPanel panel) {
         this.panel = panel;
+        if (board.getMode() == PLAYER_VS_COMPUTER) {
+            this.moveManager = new MoveManager(board, panel);
+        } else {
+            this.moveManager = null;
+        }
     }
 
     @Override
@@ -61,14 +58,16 @@ public class ClickListener extends MouseAdapter {
                     makeMove(move, board);
                 } else {
                     board.setSelectedPiece(null);
+                    board.removeHighlightedSquare(selected.getSquareId());
                     if (piece != null) {
-                        board.removeHighlightedSquare(selected.getSquareId());
-                        if (selected.getSquareId() != squareId) {
-                            // select new piece if another same-color piece is clicked (and deselect old)
-                            board.setSelectedPiece(piece);
-                            board.addHighlightedSquare(squareId, SELECTED_COLOR);
+                        if (piece.isColor(board.getColorToMove())) {
+                            if (selected.getSquareId() != squareId) {
+                                // select new piece if another same-color piece is clicked (and deselect old)
+                                board.setSelectedPiece(piece);
+                                board.addHighlightedSquare(squareId, SELECTED_COLOR);
+                            }
+                            board.setDraggedPiece(piece);
                         }
-                        board.setDraggedPiece(piece);
                     } else {
                         // if random non-piece square is clicked
                         board.removeHighlightedSquare(squareId);
@@ -103,14 +102,18 @@ public class ClickListener extends MouseAdapter {
 
     public void makeMove(Move move, Board board) {
         //todo: repaint only part of screen
-        int start = move.getStartSquare();
-        int target = move.getTargetSquare();
-        board.clearHighlightedSquares();
-        board.addHighlightedSquare(start, Board.MOVED_COLOR);
-        board.addHighlightedSquare(target, Board.MOVED_COLOR);
         board.makeMove(move);
         board.setSelectedPiece(null);
         board.setDraggedPiece(null);
         panel.repaint();
+
+        if (board.getMode() == PLAYER_VS_COMPUTER) {
+            int colorToMove = board.getColorToMove();
+            if (colorToMove == board.getPlayAs()) {
+                this.moveManager.aiJustMoved();
+            } else {
+                this.moveManager.playerJustMoved();
+            }
+        }
     }
 }

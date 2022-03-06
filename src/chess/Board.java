@@ -88,6 +88,10 @@ public class Board extends Chess {
         // doesn't check for valid moves so a valid move should be passed in
         // todo: disable castling if rook moves
         int start = move.getStartSquare();
+        int target = move.getTargetSquare();
+        clearHighlightedSquares();
+        addHighlightedSquare(start, Board.MOVED_COLOR);
+        addHighlightedSquare(target, Board.MOVED_COLOR);
         Piece toMove = arrangement[start];
         if (toMove.isColor(Piece.BLACK)) incrementNumMoves();
         if (move.isCastle()) {
@@ -99,13 +103,13 @@ public class Board extends Chess {
                 blackQueenSideCastle = false;
             }
             Piece rook = arrangement[move.getRookPos()];
-            rook.setSquareId(move.getTargetSquare() + (move.getCastleType() == KING_SIDE_CASTLE ? -1 : 1));
+            rook.setSquareId(target + (move.getCastleType() == KING_SIDE_CASTLE ? -1 : 1));
             arrangement[move.getRookPos()] = null;
-            arrangement[move.getTargetSquare() + (move.getCastleType() == KING_SIDE_CASTLE ? -1 : 1)] = rook;
+            arrangement[target + (move.getCastleType() == KING_SIDE_CASTLE ? -1 : 1)] = rook;
         }
         arrangement[start] = null;
-        arrangement[move.getTargetSquare()] = toMove;
-        toMove.setSquareId(move.getTargetSquare());
+        arrangement[target] = toMove;
+        toMove.setSquareId(target);
         this.colorToMove = this.colorToMove == Piece.WHITE ? Piece.BLACK : Piece.WHITE;
         this.fen = generateFenPosition(this);
         this.moves = generateAllMoves(this);

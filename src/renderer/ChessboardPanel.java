@@ -20,9 +20,8 @@ public class ChessboardPanel extends JPanel {
         this.board = board;
         this.setPreferredSize(new Dimension(width, height));
         this.setMinimumSize(new Dimension(600, 400));
-        ClickListener cl = new ClickListener(board);
+        ClickListener cl = new ClickListener(board, this);
         this.addMouseListener(cl);
-        cl.setPanel(this);
     }
 
     @Override
