@@ -176,6 +176,10 @@ public abstract class Chess {
                     } else {  // no piece in way
                         if (piece.isPawn() && direction[0] != 0) {  // pawn finds no piece to capture
                             break;
+                        } else if (piece.isPawn() && (direction[1] == 2 || direction[1] == -2)) {
+                            if (!((piece.isColor(WHITE) && posY == size - 2) || (piece.isColor(BLACK) && posY == 1))) {
+                                break;
+                            }
                         }
                         moves.add(new Move(board, start, y * size + x));
                     }
