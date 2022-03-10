@@ -24,6 +24,9 @@ public class ClickListener extends MouseAdapter {
         this.panel = panel;
         if (board.getMode() == PLAYER_VS_COMPUTER) {
             this.moveManager = new MoveManager(board, panel);
+            if (board.getColorToMove() != board.getPlayAs()) {
+                this.moveManager.playerJustMoved();
+            }
         } else {
             this.moveManager = null;
         }
@@ -36,11 +39,11 @@ public class ClickListener extends MouseAdapter {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        // todo: pre-moves and disable both sides playing
+        // todo: premoves
         int squareId = board.getPieceFromScreenCoords(e.getX(), e.getY());
         Piece piece = squareId != -1 ? board.getArrangement()[squareId] : null;
         if (e.getButton() == 3) {
-            // todo: add arrows and square highlighting
+            // todo: arrows and square highlighting
         } else if (e.getButton() == 1) {
             Piece selected = board.getSelectedPiece();
             if (selected == null) {

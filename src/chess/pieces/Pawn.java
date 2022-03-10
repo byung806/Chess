@@ -4,7 +4,7 @@ import chess.Board;
 
 public class Pawn extends Piece {
     public Pawn(int color, Board board, int row, int col) {
-        this.pieceType = color == WHITE ? (WHITE | PAWN) : (BLACK | PAWN);
+        this.pieceType = color | PAWN;
         this.board = board;
         this.image = color == WHITE ? WHITE_PAWN_IMAGE : BLACK_PAWN_IMAGE;
         this.row = row;
