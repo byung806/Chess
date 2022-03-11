@@ -31,12 +31,12 @@ public class MoveManager implements Runnable {
     }
 
     private void startMoveSearchAndMove() {
+        this.moves = board.getMoves();
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        this.moves = board.getMoves();
         Move bestMove = AI.getBestMove(moves, board, 1);
         board.makeMove(bestMove);
         panel.repaint();

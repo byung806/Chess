@@ -46,6 +46,9 @@ public class ClickListener extends MouseAdapter {
             // todo: arrows and square highlighting
         } else if (e.getButton() == 1) {
             Piece selected = board.getSelectedPiece();
+            if (board.getMode() == PLAYER_VS_COMPUTER && piece != null && !piece.isColor(board.getPlayAs()) && selected == null) {
+                return;
+            }
             if (selected == null) {
                 //no possibility of moving
                 if (piece != null && piece.isColor(board.getColorToMove())) {
