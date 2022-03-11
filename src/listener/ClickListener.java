@@ -61,7 +61,7 @@ public class ClickListener extends MouseAdapter {
                 Move move = new Move(board, selected.getSquareId(), squareId);
                 if (board.isCurrentValidMove(move)) {
                     // if click to move is valid
-                    makeMove(move, board);
+                    makeMove(board.findMatchInValidMoves(move), board);
                 } else {
                     board.setSelectedPiece(null);
                     board.removeHighlightedSquare(selected.getSquareId());
