@@ -19,7 +19,7 @@ public abstract class Piece {
     public static final int TYPE_MASK = 0b00111;
     public static final int COLOR_MASK = 0b11000;
 
-    // Each piece can be represented by CCTTT in binary where CC represents the color and TTT represents the piece type
+    // Each piece can be represented by CCTTT in binary where CC represents the getColor and TTT represents the piece type
 
     protected static final Image WHITE_PAWN_IMAGE = new ImageIcon("assets/textures/white_pawn.png").getImage();
     protected static final Image WHITE_KING_IMAGE = new ImageIcon("assets/textures/white_king.png").getImage();
@@ -39,6 +39,7 @@ public abstract class Piece {
     protected Board board;
     protected int row, col;  // upper left corner is (0,0)
     protected int squareId;
+    protected boolean moved;
 
     public Image getImage() {
         return this.image;
@@ -63,14 +64,19 @@ public abstract class Piece {
     public void setSquareId(int squareId) {
         this.squareId = squareId;
         this.col = squareId % board.getSize();
-        this.row = (squareId - this.col) / board.getSize();
+        this.row = squareId / board.getSize();
+        this.moved = true;
+    }
+
+    public boolean getMoved() {
+        return this.moved;
     }
 
     public boolean isColor(int color) {
         return (this.pieceType & COLOR_MASK) == color;
     }
 
-    public int color() {
+    public int getColor() {
         return this.pieceType & COLOR_MASK;
     }
 
@@ -105,13 +111,6 @@ public abstract class Piece {
     public boolean isSlidingPiece() {
         return (this.pieceType & 0b100) == 0b100;
     }
-
-//    public Piece clone() {
-//        switch (this.pieceType & TYPE_MASK) {
-//            case KING -> {return new King(this.pieceType & COLOR_MASK, this.board, this.row, this.col);}
-//
-//        }
-//    }
 
     public String toString() {
         HashMap<Integer, String> asciiChess = new HashMap<>();

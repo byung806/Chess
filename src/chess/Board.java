@@ -86,7 +86,7 @@ public class Board extends Chess {
         addHighlightedSquare(target, Board.MOVED_COLOR);
         Piece toMove = arrangement[start];
         if (toMove.isColor(Piece.BLACK)) incrementNumMoves();
-        if (move.isCastle()) {
+        if (toMove.isKing()) {
             if (toMove.isColor(Piece.WHITE)) {
                 whiteKingSideCastle = false;
                 whiteQueenSideCastle = false;
@@ -94,10 +94,12 @@ public class Board extends Chess {
                 blackKingSideCastle = false;
                 blackQueenSideCastle = false;
             }
-            Piece rook = arrangement[move.getRookPos()];
-            rook.setSquareId(target + (move.getCastleType() == KING_SIDE_CASTLE ? -1 : 1));
-            arrangement[move.getRookPos()] = null;
-            arrangement[target + (move.getCastleType() == KING_SIDE_CASTLE ? -1 : 1)] = rook;
+            if (move.isCastle()) {
+                Piece rook = arrangement[move.getRookPos()];
+                rook.setSquareId(target + (move.getCastleType() == KING_SIDE_CASTLE ? -1 : 1));
+                arrangement[move.getRookPos()] = null;
+                arrangement[target + (move.getCastleType() == KING_SIDE_CASTLE ? -1 : 1)] = rook;
+            }
         }
         arrangement[start] = null;
         arrangement[target] = toMove;

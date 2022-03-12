@@ -10,5 +10,6 @@ public class King extends Piece {
         this.row = row;
         this.col = col;
         this.squareId = col + row * board.getSize();
+        this.moved = false;
     }
 }

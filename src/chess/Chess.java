@@ -118,7 +118,7 @@ public abstract class Chess {
         int posY = piece.getRow();
         int sqId = piece.getSquareId();
         int size = board.getSize();
-        int pieceColor = piece.color();
+        int pieceColor = piece.getColor();
         int start = piece.getSquareId();
 
         int[][] directions = switch (piece.pieceType() & TYPE_MASK) {
@@ -138,12 +138,15 @@ public abstract class Chess {
             if (board.WhiteQueenSideCastle() || board.BlackQueenSideCastle()) castleDirections.add(-1);
             for (int dir : castleDirections) {
                 for (int x = posX; x < size; x += dir) {
+                    if (posY*size+x == -1) {
+                        System.out.println(posY + " "+ size +" "+ x);
+                    }
                     Piece pieceInWay = arrangement[posY * size + x];
-                    boolean squareAttacked = squareIsAttacked(posY * size + x, piece.color(), arrangement);
+                    boolean squareAttacked = squareIsAttacked(posY * size + x, piece.getColor(), arrangement);
                     if ((squareAttacked || pieceInWay != null)) {
                         if (pieceInWay != piece) {
                             Piece p = arrangement[posY * size + x];
-                            if (p != null && p.pieceType() == (piece.color() | Piece.ROOK) && Math.abs(x - posX) > 2) {
+                            if (p != null && p.pieceType() == (piece.getColor() | Piece.ROOK) && Math.abs(x - posX) > 2 && !p.getMoved()) {
                                 int rookPos = posY * size + x;
                                 moves.add(new Move(board, sqId, sqId + dir * 2, rookPos, dir == 1 ? Board.KING_SIDE_CASTLE : Board.QUEEN_SIDE_CASTLE));
                             }
@@ -167,7 +170,7 @@ public abstract class Chess {
                         if (!pieceInWay.isColor(pieceColor) && ((piece.isPawn() && direction[0] != 0) || !piece.isPawn())) {
                             // if piece in way of sliding piece or pawn has a piece to capture or piece is normal piece
                             moves.add(new Move(board, start, y * size + x));
-                        } else {  // piece is same color or move is normal pawn move or piece is not pawn
+                        } else {  // piece is same getColor or move is normal pawn move or piece is not pawn
                             if (piece.isPawn() && direction[0] == 0) {  // piece in way of pawn
                                 break directionLoop;
                             }

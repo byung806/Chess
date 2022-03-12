@@ -52,7 +52,7 @@ public class ClickListener extends MouseAdapter {
             if (selected == null) {
                 //no possibility of moving
                 if (piece != null && piece.isColor(board.getColorToMove())) {
-                    // start dragging and select drag square if piece is right color
+                    // start dragging and select drag square if piece is right getColor
                     board.setDraggedPiece(piece);
                     board.setSelectedPiece(piece);
                     board.addHighlightedSquare(squareId, Board.SELECTED_COLOR);
@@ -68,7 +68,7 @@ public class ClickListener extends MouseAdapter {
                     if (piece != null) {
                         if (piece.isColor(board.getColorToMove())) {
                             if (selected.getSquareId() != squareId) {
-                                // select new piece if another same-color piece is clicked (and deselect old)
+                                // select new piece if another same-getColor piece is clicked (and deselect old)
                                 board.setSelectedPiece(piece);
                                 board.addHighlightedSquare(squareId, SELECTED_COLOR);
                             }

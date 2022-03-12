@@ -16,7 +16,7 @@ public class Move {
         this.castle = false;
         this.rookPos = -1;
         this.castleType = -1;
-        this.colorMoving = board.getArrangement()[start].color();
+        this.colorMoving = board.getArrangement()[start].getColor();
     }
 
     public Move(Board board, int start, int target, int rookPos, int castleType) {
@@ -26,7 +26,7 @@ public class Move {
         this.castle = true;
         this.rookPos = rookPos;
         this.castleType = castleType;
-        this.colorMoving = board.getArrangement()[start].color();
+        this.colorMoving = board.getArrangement()[start].getColor();
     }
 
     public int getStartSquare() {
