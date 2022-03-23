@@ -181,12 +181,12 @@ public abstract class Chess {
                             int enPassantSquare = board.getEnPassantSquare();
                             if (posX - 1 >= 0 && onLeft != null && onLeft.isPawn() && !onLeft.isColor(pieceColor)) {
                                 // possible en passant pawn on left
-                                if (enPassantSquare == posY * size + posX - 1) {
+                                if (enPassantSquare == posY * size + posX - 1 && enPassantSquare % size == posX + direction[0]) {
                                     moves.add(new Move(board, start, (posY + direction[1]) * size + posX + direction[0], Move.EN_PASSANT, enPassantSquare));
                                 }
                             } else if (posX + 1 < size && onRight != null && onRight.isPawn() && !onRight.isColor(pieceColor)) {
                                 // possible en passant pawn on right
-                                if (enPassantSquare == posY * size + posX + 1) {
+                                if (enPassantSquare == posY * size + posX + 1 && enPassantSquare % size == posX + direction[0]) {
                                     moves.add(new Move(board, start, (posY + direction[1]) * size + posX + direction[0], Move.EN_PASSANT, enPassantSquare));
                                 }
                             }
