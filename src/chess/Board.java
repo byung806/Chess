@@ -13,33 +13,23 @@ public class Board extends Chess {
     public static Color SELECTED_COLOR = new Color(0.396f, 0.886f, 0.772f, 0.8f);
     public static Color VALID_MOVES_COLOR = new Color(0.501f, 0.501f, 0.501f, 0.2f);
     public static Color RED = new Color(0.982f, 0.102f, 0.105f, 0.8f);
-    public static int KING_SIDE_CASTLE = 0;
-    public static int QUEEN_SIDE_CASTLE = 1;
+    public static int KING_SIDE_CASTLE = 3;
+    public static int QUEEN_SIDE_CASTLE = 4;
     public static int PLAYER_VS_PLAYER = 0;
     public static int PLAYER_VS_COMPUTER = 1;
     private final Piece[] arrangement;
-    private final int size;
-    private final int playAs;
-    private final int mode;
+    private final int size, playAs, mode;
+    private ArrayList<Piece> taken;
+    private int colorToMove;
     private Sound soundManager;
-    private Piece draggedPiece;
-    private Piece selectedPiece;
-    private int enPassantSquare;
-    private Piece enPassantPieceToBeTaken;
+    private Piece draggedPiece, selectedPiece, enPassantPieceToBeTaken;
+    private int enPassantSquare, halfMoveClock, numMoves;
     private HashMap<Integer, ArrayList<Color>> highlightedSquares;
     private ArrayList<Move> moves;
-    private boolean whiteKingSideCastle;
-    private boolean whiteQueenSideCastle;
-    private boolean blackKingSideCastle;
-    private boolean blackQueenSideCastle;
-    private int colorToMove;
-    private int halfMoveClock;
-    private int numMoves;
+    private boolean whiteKingSideCastle, whiteQueenSideCastle, blackKingSideCastle, blackQueenSideCastle;
     private String fen;
     private boolean dirty;
-    private int screenLength;
-    private int screenX;
-    private int screenY;
+    private int screenLength, screenX, screenY;
 
     public Board(String fen, int playAs, int mode) {
         // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
@@ -67,6 +57,7 @@ public class Board extends Chess {
             System.out.println("Could not load some sound assets.");
         }
 
+        this.taken = new ArrayList<>();
         this.playAs = playAs;
         this.mode = mode;
         this.fen = fen;
@@ -78,7 +69,6 @@ public class Board extends Chess {
 
     public void makeMove(Move move) {
         // doesn't check for valid moves so a valid move should be passed in
-        // todo: disable castling if rook moves
         int start = move.getStartSquare();
         int target = move.getTargetSquare();
         clearHighlightedSquares();
@@ -101,9 +91,18 @@ public class Board extends Chess {
                 arrangement[target + (move.getCastleType() == KING_SIDE_CASTLE ? -1 : 1)] = rook;
             }
         }
-        arrangement[start] = null;
-        arrangement[target] = toMove;
-        toMove.setSquareId(target);
+        if (move.isEnPassant()) {
+            int enPassantSq = move.getEnPassantSquare();
+            this.taken.add(arrangement[enPassantSq]);
+            arrangement[enPassantSq] = null;
+        }
+        if (move.isDoublePawnMove()) {
+            this.enPassantSquare = move.getTargetSquare();
+        } else {
+            this.enPassantSquare = -1;
+        }
+
+        move(this.colorToMove, start, target);
         this.colorToMove = this.colorToMove == Piece.WHITE ? Piece.BLACK : Piece.WHITE;
         this.fen = generateFenPosition(this);
         this.moves = generateAllMoves(this);
@@ -115,6 +114,17 @@ public class Board extends Chess {
             }
         }
         this.dirty = true;
+    }
+
+    public void move(int colorToMove, int start, int target) {
+        Piece toMove = arrangement[start];
+        Piece targetPiece = arrangement[target];
+        if (targetPiece != null) {
+            this.taken.add(targetPiece);
+        }
+        toMove.setSquareId(target);
+        arrangement[start] = null;
+        arrangement[target] = toMove;
     }
 
     public int getPieceFromScreenCoords(int x, int y) {
@@ -236,13 +246,13 @@ public class Board extends Chess {
 
     public void setEnPassantSquare(int square) {
         this.enPassantSquare = square;
-        if (square / size == 2) {  // black's side
-            enPassantPieceToBeTaken = arrangement[square + size];
-        } else if (square / size == size - 3) {  // white's side
-            enPassantPieceToBeTaken = arrangement[square - size];
-        } else {
-            enPassantPieceToBeTaken = null;
-        }
+//        if (square / size == 2) {  // black's side
+//            enPassantPieceToBeTaken = arrangement[square + size];
+//        } else if (square / size == size - 3) {  // white's side
+//            enPassantPieceToBeTaken = arrangement[square - size];
+//        } else {
+//            enPassantPieceToBeTaken = null;
+//        }
     }
 
     public Piece getDraggedPiece() {

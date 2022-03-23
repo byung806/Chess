@@ -92,7 +92,7 @@ public abstract class Chess {
         StringBuilder letters = new StringBuilder();
         while (x > 0) {
             letters.append((char) (x % 26 + 96));
-            x = x / 26;
+            x /= 26;
         }
         letters.reverse();
         return letters.toString();
@@ -102,7 +102,7 @@ public abstract class Chess {
         return switch (color) {
             case WHITE -> BLACK;
             case BLACK -> WHITE;
-            default -> -1;
+            default -> color;
         };
     }
 
@@ -138,9 +138,6 @@ public abstract class Chess {
             if (board.WhiteQueenSideCastle() || board.BlackQueenSideCastle()) castleDirections.add(-1);
             for (int dir : castleDirections) {
                 for (int x = posX; x < size; x += dir) {
-                    if (posY*size+x == -1) {
-                        System.out.println(posY + " "+ size +" "+ x);
-                    }
                     Piece pieceInWay = arrangement[posY * size + x];
                     boolean squareAttacked = squareIsAttacked(posY * size + x, piece.getColor(), arrangement);
                     if ((squareAttacked || pieceInWay != null)) {
@@ -148,7 +145,7 @@ public abstract class Chess {
                             Piece p = arrangement[posY * size + x];
                             if (p != null && p.pieceType() == (piece.getColor() | Piece.ROOK) && Math.abs(x - posX) > 2 && !p.getMoved()) {
                                 int rookPos = posY * size + x;
-                                moves.add(new Move(board, sqId, sqId + dir * 2, rookPos, dir == 1 ? Board.KING_SIDE_CASTLE : Board.QUEEN_SIDE_CASTLE));
+                                moves.add(new Move(board, sqId, sqId + dir * 2, dir == 1 ? Board.KING_SIDE_CASTLE : Board.QUEEN_SIDE_CASTLE, rookPos));
                             }
                             break;
                         } else if (squareAttacked) {
@@ -169,7 +166,7 @@ public abstract class Chess {
                     if (pieceInWay != null) {
                         if (!pieceInWay.isColor(pieceColor) && ((piece.isPawn() && direction[0] != 0) || !piece.isPawn())) {
                             // if piece in way of sliding piece or pawn has a piece to capture or piece is normal piece
-                            moves.add(new Move(board, start, y * size + x));
+                            moves.add(new Move(board, start, y * size + x, Move.DEFAULT, -1));
                         } else {  // piece is same getColor or move is normal pawn move or piece is not pawn
                             if (piece.isPawn() && direction[0] == 0) {  // piece in way of pawn
                                 break directionLoop;
@@ -177,14 +174,31 @@ public abstract class Chess {
                         }
                         break;
                     } else {  // no piece in way
-                        if (piece.isPawn() && direction[0] != 0) {  // pawn finds no piece to capture
+                        if (piece.isPawn() && direction[0] != 0) {  // pawn finds no piece to capture in normal spot
+                            // check en passant
+                            Piece onLeft = arrangement[posY * size + posX - 1];
+                            Piece onRight = arrangement[posY * size + posX + 1];
+                            int enPassantSquare = board.getEnPassantSquare();
+                            if (posX - 1 >= 0 && onLeft != null && onLeft.isPawn() && !onLeft.isColor(pieceColor)) {
+                                // possible en passant pawn on left
+                                if (enPassantSquare == posY * size + posX - 1) {
+                                    moves.add(new Move(board, start, (posY + direction[1]) * size + posX + direction[0], Move.EN_PASSANT, enPassantSquare));
+                                }
+                            } else if (posX + 1 < size && onRight != null && onRight.isPawn() && !onRight.isColor(pieceColor)) {
+                                // possible en passant pawn on right
+                                if (enPassantSquare == posY * size + posX + 1) {
+                                    moves.add(new Move(board, start, (posY + direction[1]) * size + posX + direction[0], Move.EN_PASSANT, enPassantSquare));
+                                }
+                            }
                             break;
                         } else if (piece.isPawn() && (direction[1] == 2 || direction[1] == -2)) {
                             if (!((piece.isColor(WHITE) && posY == size - 2) || (piece.isColor(BLACK) && posY == 1))) {
                                 break;
                             }
+                            moves.add(new Move(board, start, y * size + x, Move.DOUBLE_PAWN, -1));
+                            break;
                         }
-                        moves.add(new Move(board, start, y * size + x));
+                        moves.add(new Move(board, start, y * size + x, Move.DEFAULT, -1));
                     }
                     if (!piece.isSlidingPiece()) {
                         break;

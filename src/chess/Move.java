@@ -1,31 +1,42 @@
 package chess;
 
 public class Move {
+    public static final int DEFAULT = 0;
+    public static final int EN_PASSANT = 1;
+    public static final int DOUBLE_PAWN = 2;
+    public static final int KING_SIDE_CASTLE = 3;
+    public static final int QUEEN_SIDE_CASTLE = 4;
+
     final private Board board;
     final private int startSquare;
     final private int targetSquare;
-    final private boolean castle;
     final private int rookPos;
     final private int castleType;
+    final private int doublePawnMoveMiddle;
+    final private int enPassantSquare;
     final private int colorMoving;
 
-    public Move(Board board, int start, int target) {
+    public Move(Board board, int start, int target, int type, int rookPosOrEnPassantSquare) {
         this.board = board;
         this.startSquare = start;
         this.targetSquare = target;
-        this.castle = false;
-        this.rookPos = -1;
-        this.castleType = -1;
-        this.colorMoving = board.getArrangement()[start].getColor();
-    }
-
-    public Move(Board board, int start, int target, int rookPos, int castleType) {
-        this.board = board;
-        this.startSquare = start;
-        this.targetSquare = target;
-        this.castle = true;
-        this.rookPos = rookPos;
-        this.castleType = castleType;
+        if (type == KING_SIDE_CASTLE || type == QUEEN_SIDE_CASTLE) {
+            this.castleType = type;
+            this.rookPos = rookPosOrEnPassantSquare;
+        } else {
+            this.castleType = -1;
+            this.rookPos = -1;
+        }
+        if (type == EN_PASSANT) {
+            this.enPassantSquare = rookPosOrEnPassantSquare;
+        } else {
+            this.enPassantSquare = -1;
+        }
+        if (type == DOUBLE_PAWN) {
+            this.doublePawnMoveMiddle = (start + target) / 2;
+        } else {
+            this.doublePawnMoveMiddle = -1;
+        }
         this.colorMoving = board.getArrangement()[start].getColor();
     }
 
@@ -45,8 +56,24 @@ public class Move {
         return board;
     }
 
+    public boolean isEnPassant() {
+        return this.enPassantSquare != -1;
+    }
+
+    public int getEnPassantSquare() {
+        return this.enPassantSquare;
+    }
+
+    public boolean isDoublePawnMove() {
+        return this.doublePawnMoveMiddle != -1;
+    }
+
+    public int getDoublePawnMiddle() {
+        return this.doublePawnMoveMiddle;
+    }
+
     public boolean isCastle() {
-        return this.castle;
+        return this.castleType != -1;
     }
 
     public int getRookPos() {
@@ -68,12 +95,13 @@ public class Move {
         StringBuilder move = new StringBuilder();
         move.append("[").append(startSquare).append("->").append(targetSquare);
         if (castleType == 0) {
-            move.append(" KINGSIDE_CASTLE]");
+            move.append(" KINGSIDE_CASTLE");
         } else if (castleType == 1) {
-            move.append(" QUEENSIDE_CASTLE]");
-        } else {
-            move.append("]");
+            move.append(" QUEENSIDE_CASTLE");
+        } else if (enPassantSquare != -1) {
+            move.append(" EN_PASSANT ").append(enPassantSquare);
         }
+        move.append("]");
         return move.toString();
     }
 }
